@@ -2,7 +2,7 @@ import {createTripInfoMarkup} from './view/info.js';
 import {createSiteMenuMarkup} from './view/site-menu.js';
 import {createTripFiltersMarkup} from './view/filter.js';
 import {createTripSortMarkup} from './view/sort.js';
-import {createTripDaysMarkup} from './view/days.js';
+import {createTripDaysMarkup} from './view/days-list.js';
 import {createTripDayMarkup} from './view/day.js';
 import {createTripEventMarkup} from './view/event.js';
 import {createTripEventEditMarkup} from './view/event-edit.js';
