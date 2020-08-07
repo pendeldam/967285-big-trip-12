@@ -25,28 +25,28 @@ const generateRandomDate = () => {
   return {dateStart, dateEnd, duration};
 };
 
+const getEventOffers = (type, offers) => {
+  for (const offer of offers) {
+    if (offer.type === type) {
+      let result = [];
+      offer.offers.forEach((it) => {
+        if (Math.random() > 0.5) {
+          result.push(it);
+        }
+      });
+      result = result.length ? result : null;
+      return result;
+    }
+  }
+  return null;
+};
+
 export const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
     .map((event, index) => {
       const type = getRandomArrayItem(EVENT_TYPE);
       const date = generateRandomDate();
-
-      const getEventOffers = (eventType, offers) => {
-        for (const offer of offers) {
-          if (offer.type === eventType) {
-            let result = [];
-            offer.offers.forEach((it) => {
-              if (Math.random() > 0.5) {
-                result.push(it);
-              }
-            });
-            result = result.length ? result : null;
-            return result;
-          }
-        }
-        return null;
-      };
 
       event = {
         id: index,

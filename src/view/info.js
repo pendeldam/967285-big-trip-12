@@ -23,9 +23,10 @@ const costMarkup = (events) => {
 
   for (const event of events) {
     if (event.offers !== null) {
-      const offerPrices = event.offers.map((offer) => offer.price);
-      const offersCost = offerPrices.reduce((acc, val) => acc + val);
-      result += event.price + offersCost;
+      const offerPrices = event.offers
+        .map((offer) => offer.price)
+        .reduce((acc, val) => acc + val);
+      result += event.price + offerPrices;
     } else {
       result += event.price;
     }
