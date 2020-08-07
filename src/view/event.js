@@ -22,7 +22,7 @@ export const createTripEventMarkup = (event) => {
   const {type, price, destination, dateFrom, dateTo, duration, offers} = event;
   const ISOdateFrom = dateFrom.toISOString().split(`.`);
   const ISOdateTo = dateTo.toISOString().split(`.`);
-  const isTransport = (type === `Check-in` || type === `Sightseeing` || type === `Restaurant`) ? `in` : `to`;
+  const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(type) ? `in` : `to`;
 
   return (
     `<li class="trip-events__item">
@@ -30,7 +30,7 @@ export const createTripEventMarkup = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${isTransport} ${destination.name}</h3>
+        <h3 class="event__title">${type} ${preposition} ${destination.name}</h3>
 
         <div class="event__schedule">
           <p class="event__time">

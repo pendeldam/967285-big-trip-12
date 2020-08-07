@@ -1,14 +1,14 @@
 const destinationMarkup = (events) => {
   if (events.length > 3) {
     return `${events[0].destination.name} &mdash; ... &mdash; ${events[events.length - 1].destination.name}`;
-  } else {
-    return events.map((event, index) => {
-      if (index !== events.length - 1) {
-        return `${event.destination.name} &mdash; `;
-      }
-      return event.destination.name;
-    }).join(``);
   }
+
+  return events.map((event, index) => {
+    if (index !== events.length - 1) {
+      return `${event.destination.name} &mdash; `;
+    }
+    return event.destination.name;
+  }).join(``);
 };
 
 const datesMarkup = (events) => {

@@ -60,7 +60,7 @@ const createEventEditOffersEl = (event) => {
 
 export const createTripEventEditMarkup = (event = {}) => {
   const {id, type, dateFrom, dateTo, price, destination, isFavorite} = event;
-  const isTransport = (type === `Check-in` || type === `Sightseeing` || type === `Restaurant`) ? `in` : `to`;
+  const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(type) ? `in` : `to`;
 
   return (
     `<li class="trip-events__item">
@@ -88,7 +88,7 @@ export const createTripEventEditMarkup = (event = {}) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-${id}">
-          ${type} ${isTransport}
+          ${type} ${preposition}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination ? destination.name : ``}" list="destination-list-${id}">
           <datalist id="destination-list-${id}">
