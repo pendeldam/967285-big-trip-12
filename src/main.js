@@ -3,11 +3,14 @@ import {createSiteMenuMarkup} from './view/site-menu.js';
 import {createTripFiltersMarkup} from './view/filter.js';
 import {createTripSortMarkup} from './view/sort.js';
 import {createTripDaysMarkup} from './view/days-list.js';
-import {createTripDayMarkup} from './view/day.js';
-import {createTripEventMarkup} from './view/event.js';
-import {createTripEventEditMarkup} from './view/event-edit.js';
+import {createNoEventsMarkup} from './view/no-events.js';
+import {generateEvents} from './mock/event.js';
 
-const EVENTS_COUNT = 3;
+const TRIP_EVENTS_COUNT = 20;
+const events = generateEvents(TRIP_EVENTS_COUNT);
+const sortedEvents = events.slice().sort((a, b) => a.dateFrom - b.dateFrom);
+const days = new Set(sortedEvents.map((event) => event.dateFrom.toLocaleDateString()));
+
 const headerMainEl = document.querySelector(`.trip-main`);
 const headerControlsEl = headerMainEl.querySelector(`.trip-controls`);
 const mainTripEventsEl = document.querySelector(`.trip-events`);
@@ -16,17 +19,13 @@ const render = (container, element, location) => {
   container.insertAdjacentHTML(location, element);
 };
 
-render(headerMainEl, createTripInfoMarkup(), `afterbegin`);
+render(headerMainEl, createTripInfoMarkup(sortedEvents), `afterbegin`);
 render(headerControlsEl.querySelector(`h2`), createSiteMenuMarkup(), `afterend`);
 render(headerControlsEl, createTripFiltersMarkup(), `beforeend`);
-render(mainTripEventsEl.querySelector(`h2`), createTripSortMarkup(), `afterend`);
-render(mainTripEventsEl, createTripDaysMarkup(), `beforeend`);
-render(mainTripEventsEl.querySelector(`.trip-days`), createTripDayMarkup(), `beforeend`);
 
-const eventListEl = mainTripEventsEl.querySelector(`.trip-events__list`);
-
-render(eventListEl, createTripEventEditMarkup(), `beforeend`);
-
-for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(eventListEl, createTripEventMarkup(), `beforeend`);
+if (!events.length) {
+  render(mainTripEventsEl, createNoEventsMarkup(), `beforeend`);
+} else {
+  render(mainTripEventsEl, createTripSortMarkup(), `beforeend`);
+  render(mainTripEventsEl, createTripDaysMarkup(days, sortedEvents), `beforeend`);
 }
