@@ -1,17 +1,7 @@
-import {createTripEventMarkup} from './event.js';
-import {createTripEventEditMarkup} from './event-edit.js';
+import {createElement} from '../utils.js';
 
-export const createTripDayMarkup = (day, index, events) => {
+const createTripDayMarkup = (day, index, events) => {
   const eventsByDay = events.filter((event) => event.dateFrom.toLocaleDateString() === day);
-  const eventsMarkup = eventsByDay
-    .map((event) => {
-      if (index === 0 && event === eventsByDay[0]) {
-        return createTripEventEditMarkup(event);
-      }
-      return createTripEventMarkup(event);
-    })
-    .join(`\n`);
-
   const date = eventsByDay[0].dateFrom;
   const ISOdate = date.toISOString().split(`T`);
   const shortDate = date.toLocaleDateString(`en-US`, {month: `short`, day: `2-digit`});
@@ -22,7 +12,32 @@ export const createTripDayMarkup = (day, index, events) => {
       <span class="day__counter">${index + 1}</span>
       <time class="day__date" datetime="${ISOdate[0]}">${shortDate}</time>
     </div>
-    <ul class="trip-events__list">${eventsMarkup}</ul>
+    <ul class="trip-events__list"></ul>
   </li>`
   );
 };
+
+export default class DayView {
+  constructor(day, index, events) {
+    this._day = day;
+    this._index = index;
+    this._events = events;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripDayMarkup(this._day, this._index, this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

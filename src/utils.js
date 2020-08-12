@@ -13,7 +13,7 @@ export const getRandomArray = (length, cb) => {
 };
 
 const castTimeFormat = (value) => {
-  return value < 10 ? String(value).padStart(2, `0`) : String(value);
+  return String(value).padStart(2, `0`);
 };
 
 export const formatTime = (date) => {
@@ -35,4 +35,15 @@ export const formatDuration = (value) => {
   } else {
     return `${castTimeFormat(minutes)}M`;
   }
+};
+
+export const render = (container, element, position = `beforeend`) => {
+  container.insertAdjacentElement(position, element);
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
 };

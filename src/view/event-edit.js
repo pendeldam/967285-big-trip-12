@@ -1,5 +1,5 @@
 import {EVENT_TYPE, EVENT_DESTINATION} from '../const.js';
-import {formatTime} from '../utils.js';
+import {formatTime, createElement} from '../utils.js';
 
 const createTypesMarkup = (types) => {
   return types.map((type, index) => {
@@ -58,7 +58,7 @@ const createEventEditOffersEl = (event) => {
   );
 };
 
-export const createTripEventEditMarkup = (event = {}) => {
+const createTripEventEditMarkup = (event = {}) => {
   const {id, type, dateFrom, dateTo, price, destination, isFavorite} = event;
   const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(type) ? `in` : `to`;
 
@@ -140,3 +140,26 @@ export const createTripEventEditMarkup = (event = {}) => {
     </li>`
   );
 };
+
+export default class EventEditView {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventEditMarkup(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

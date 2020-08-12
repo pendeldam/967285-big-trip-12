@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 const destinationMarkup = (events) => {
   if (events.length > 3) {
     return `${events[0].destination.name} &mdash; ... &mdash; ${events[events.length - 1].destination.name}`;
@@ -32,7 +34,7 @@ const costMarkup = (events) => {
   return result;
 };
 
-export const createTripInfoMarkup = (events) => {
+const createTripInfoMarkup = (events) => {
   if (!events.length) {
     return (
       `<section class="trip-main__trip-info  trip-info">
@@ -55,3 +57,26 @@ export const createTripInfoMarkup = (events) => {
   </section>`
   );
 };
+
+export default class InfoView {
+  constructor(events) {
+    this._events = events;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoMarkup(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

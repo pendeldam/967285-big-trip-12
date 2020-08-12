@@ -1,4 +1,4 @@
-import {formatTime, formatDuration} from '../utils.js';
+import {formatTime, formatDuration, createElement} from '../utils.js';
 
 const createOffersMarkup = (offers) => {
   return offers.slice(0, 3).map((offer) => {
@@ -18,7 +18,7 @@ const createEventOffersEl = (offers) => {
   );
 };
 
-export const createTripEventMarkup = (event) => {
+const createTripEventMarkup = (event) => {
   const {type, price, destination, dateFrom, dateTo, duration, offers} = event;
   const ISOdateFrom = dateFrom.toISOString().split(`.`);
   const ISOdateTo = dateTo.toISOString().split(`.`);
@@ -55,3 +55,26 @@ export const createTripEventMarkup = (event) => {
     </li>`
   );
 };
+
+export default class EventView {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventMarkup(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
