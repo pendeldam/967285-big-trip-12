@@ -31,12 +31,28 @@ const renderEvent = (container, event) => {
     container.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
   };
 
-  eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, replaceEventToEdit);
+  const onEscKeydown = (evt) => {
+    const isEscKey = evt.key === `Esc` || evt.key === `Escape`;
 
-  eventEditComponent.getElement().addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
-    replaceEventEditToEvent();
-  });
+    if (isEscKey) {
+      replaceEventEditToEvent();
+      document.removeEventListener(`keydown`, onEscKeydown);
+    }
+  };
+
+  eventComponent.getElement()
+    .querySelector(`.event__rollup-btn`)
+    .addEventListener(`click`, () => {
+      replaceEventToEdit();
+      document.addEventListener(`keydown`, onEscKeydown);
+    });
+
+  eventEditComponent.getElement()
+    .addEventListener(`submit`, (evt) => {
+      evt.preventDefault();
+      replaceEventEditToEvent();
+      document.removeEventListener(`keydown`, onEscKeydown);
+    });
 
   render(container, eventComponent.getElement());
 };
