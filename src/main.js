@@ -25,18 +25,20 @@ const renderEvent = (container, event) => {
 
   const replaceEventToEdit = () => {
     container.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+    document.addEventListener(`keydown`, onEscKeydown);
   };
 
   const replaceEventEditToEvent = () => {
     container.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    document.removeEventListener(`keydown`, onEscKeydown);
   };
 
   const onEscKeydown = (evt) => {
     const isEscKey = evt.key === `Esc` || evt.key === `Escape`;
 
     if (isEscKey) {
+      evt.preventDefault();
       replaceEventEditToEvent();
-      document.removeEventListener(`keydown`, onEscKeydown);
     }
   };
 
@@ -44,14 +46,12 @@ const renderEvent = (container, event) => {
     .querySelector(`.event__rollup-btn`)
     .addEventListener(`click`, () => {
       replaceEventToEdit();
-      document.addEventListener(`keydown`, onEscKeydown);
     });
 
   eventEditComponent.getElement()
     .addEventListener(`submit`, (evt) => {
       evt.preventDefault();
       replaceEventEditToEvent();
-      document.removeEventListener(`keydown`, onEscKeydown);
     });
 
   render(container, eventComponent.getElement());
