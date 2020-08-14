@@ -25,18 +25,34 @@ const renderEvent = (container, event) => {
 
   const replaceEventToEdit = () => {
     container.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+    document.addEventListener(`keydown`, onEscKeydown);
   };
 
   const replaceEventEditToEvent = () => {
     container.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    document.removeEventListener(`keydown`, onEscKeydown);
   };
 
-  eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, replaceEventToEdit);
+  const onEscKeydown = (evt) => {
+    const isEscKey = evt.key === `Esc` || evt.key === `Escape`;
 
-  eventEditComponent.getElement().addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
-    replaceEventEditToEvent();
-  });
+    if (isEscKey) {
+      evt.preventDefault();
+      replaceEventEditToEvent();
+    }
+  };
+
+  eventComponent.getElement()
+    .querySelector(`.event__rollup-btn`)
+    .addEventListener(`click`, () => {
+      replaceEventToEdit();
+    });
+
+  eventEditComponent.getElement()
+    .addEventListener(`submit`, (evt) => {
+      evt.preventDefault();
+      replaceEventEditToEvent();
+    });
 
   render(container, eventComponent.getElement());
 };
