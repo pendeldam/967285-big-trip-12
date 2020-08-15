@@ -1,5 +1,6 @@
+import AbstractView from './abstract.js';
 import {EVENT_TYPE, EVENT_DESTINATION} from '../const.js';
-import {formatTime, createElement} from '../utils.js';
+import {formatTime} from '../utils/event.js';
 
 const createTypesMarkup = (types) => {
   return types.map((type, index) => {
@@ -34,7 +35,7 @@ const createDescriptionMarkup = (destination) => {
     </section>`
   );
 };
-const createOffersMarkup = (event) => {
+const createOfferItemMarkup = (event) => {
   return event.offers.map((offer) => {
     return (
       `<div class="event__offer-selector">
@@ -49,11 +50,11 @@ const createOffersMarkup = (event) => {
   }).join(`\n`);
 };
 
-const createEventEditOffersEl = (event) => {
+const createOffersListMarkup = (event) => {
   return (
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-      <div class="event__available-offers">${createOffersMarkup(event)}</div>
+      <div class="event__available-offers">${createOfferItemMarkup(event)}</div>
     </section>`
   );
 };
@@ -133,7 +134,7 @@ const createTripEventEditMarkup = (event = {}) => {
       </header>
 
       <section class="event__details">
-      ${event.offers ? createEventEditOffersEl(event) : ``}
+      ${event.offers ? createOffersListMarkup(event) : ``}
       ${event.destination ? createDescriptionMarkup(destination) : ``}
       </section>
     </form>
@@ -141,25 +142,25 @@ const createTripEventEditMarkup = (event = {}) => {
   );
 };
 
-export default class EventEditView {
+export default class EventEditView extends AbstractView {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
+    this._callback = {};
+    this._submitForm = this._submitForm.bind(this);
   }
 
   getTemplate() {
     return createTripEventEditMarkup(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _submitForm(evt) {
+    evt.preventDefault();
+    this._callback._submitForm();
   }
 
-  removeElement() {
-    this._element = null;
+  setSubmitFormHandler(callback) {
+    this._callback._submitForm = callback;
+    this.getElement().addEventListener(`submit`, this._submitForm);
   }
 }

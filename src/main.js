@@ -8,7 +8,7 @@ import EventView from './view/event.js';
 import EventEditView from './view/event-edit.js';
 import NoEventsView from './view/no-events.js';
 import {generateEvents} from './mock/event.js';
-import {render} from './utils.js';
+import {render, replace} from './utils/render.js';
 
 const TRIP_EVENTS_COUNT = 20;
 const events = generateEvents(TRIP_EVENTS_COUNT);
@@ -24,12 +24,12 @@ const renderEvent = (container, event) => {
   const eventEditComponent = new EventEditView(event);
 
   const replaceEventToEdit = () => {
-    container.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+    replace(eventEditComponent, eventComponent);
     document.addEventListener(`keydown`, onEscKeydown);
   };
 
   const replaceEventEditToEvent = () => {
-    container.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    replace(eventComponent, eventEditComponent);
     document.removeEventListener(`keydown`, onEscKeydown);
   };
 
@@ -42,36 +42,32 @@ const renderEvent = (container, event) => {
     }
   };
 
-  eventComponent.getElement()
-    .querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, () => {
-      replaceEventToEdit();
-    });
+  eventComponent.setEditClickHandler(() => {
+    replaceEventToEdit();
+  });
 
-  eventEditComponent.getElement()
-    .addEventListener(`submit`, (evt) => {
-      evt.preventDefault();
-      replaceEventEditToEvent();
-    });
+  eventEditComponent.setSubmitFormHandler(() => {
+    replaceEventEditToEvent();
+  });
 
-  render(container, eventComponent.getElement());
+  render(container, eventComponent);
 };
 
-render(headerMainEl, new InfoView(sortedEvents).getElement(), `afterbegin`);
-render(headerControlsEl.querySelector(`h2`), new SiteMenuView().getElement(), `afterend`);
-render(headerControlsEl, new FilterView().getElement());
+render(headerMainEl, new InfoView(sortedEvents), `afterbegin`);
+render(headerControlsEl.querySelector(`h2`), new SiteMenuView(), `afterend`);
+render(headerControlsEl, new FilterView());
 
 if (!events.length) {
-  render(mainTripEventsEl, new NoEventsView().getElement());
+  render(mainTripEventsEl, new NoEventsView());
 } else {
   const dayListComponent = new DaysListView();
-  render(mainTripEventsEl, new SortView().getElement());
-  render(mainTripEventsEl, dayListComponent.getElement());
+  render(mainTripEventsEl, new SortView());
+  render(mainTripEventsEl, dayListComponent);
 
   [...days].forEach((day, index) => {
     const dayComponent = new DayView(day, index, events);
 
-    render(dayListComponent.getElement(), dayComponent.getElement());
+    render(dayListComponent, dayComponent);
 
     const eventsToday = events.filter((event) => event.dateFrom.toLocaleDateString() === day);
 

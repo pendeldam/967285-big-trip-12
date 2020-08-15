@@ -36,14 +36,3 @@ export const formatDuration = (value) => {
     return `${castTimeFormat(minutes)}M`;
   }
 };
-
-export const render = (container, element, position = `beforeend`) => {
-  container.insertAdjacentElement(position, element);
-};
-
-export const createElement = (template) => {
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
-
-  return newElement.firstChild;
-};

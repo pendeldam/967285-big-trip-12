@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
 
 const destinationMarkup = (events) => {
   if (events.length > 3) {
@@ -25,8 +25,8 @@ const costMarkup = (events) => {
 
   for (const event of events) {
     if (event.offers !== null) {
-      const offersCost = event.offers.reduce((acc, val) => ({price: acc.price + val.price}));
-      result += event.price + offersCost.price;
+      const cost = event.offers.reduce((acc, val) => ({price: acc.price + val.price}));
+      result += event.price + cost.price;
     } else {
       result += event.price;
     }
@@ -34,49 +34,33 @@ const costMarkup = (events) => {
   return result;
 };
 
-const createTripInfoMarkup = (events) => {
-  if (!events.length) {
-    return (
-      `<section class="trip-main__trip-info  trip-info">
-        <p class="trip-info__cost">
-          Total: &euro;&nbsp;<span class="trip-info__cost-value">0</span>
-        </p>
-      </section>`
-    );
-  }
-  return (
-    `<section class="trip-main__trip-info  trip-info">
-    <div class="trip-info__main">
-      <h1 class="trip-info__title">${destinationMarkup(events)}</h1>
-      ${datesMarkup(events)}
-    </div>
-
-    <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">${costMarkup(events)}</span>
-    </p>
-  </section>`
-  );
-};
-
-export default class InfoView {
+export default class InfoView extends AbstractView {
   constructor(events) {
+    super();
     this._events = events;
-    this._element = null;
   }
 
   getTemplate() {
-    return createTripInfoMarkup(this._events);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
+    if (!this._events.length) {
+      return (
+        `<section class="trip-main__trip-info  trip-info">
+          <p class="trip-info__cost">
+            Total: &euro;&nbsp;<span class="trip-info__cost-value">0</span>
+          </p>
+        </section>`
+      );
     }
+    return (
+      `<section class="trip-main__trip-info  trip-info">
+        <div class="trip-info__main">
+          <h1 class="trip-info__title">${destinationMarkup(this._events)}</h1>
+          ${datesMarkup(this._events)}
+        </div>
 
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+        <p class="trip-info__cost">
+          Total: &euro;&nbsp;<span class="trip-info__cost-value">${costMarkup(this._events)}</span>
+        </p>
+      </section>`
+    );
   }
 }
