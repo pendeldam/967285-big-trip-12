@@ -17,16 +17,13 @@ export default class Trip {
 
   init(events) {
     this._events = events.slice();
-
-    const sortedEvents = this._events.slice().sort((a, b) => a.dateFrom - b.dateFrom);
-
-    this._renderInfo(sortedEvents);
+    this._renderInfo(this._events);
 
     if (!this._events.length) {
       this._renderNoEvents();
     } else {
       this._renderSort();
-      this._renderDayList(sortedEvents);
+      this._renderDayList(this._events);
     }
   }
 
