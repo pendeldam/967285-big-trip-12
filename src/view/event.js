@@ -61,7 +61,6 @@ export default class EventView extends AbstractView {
   constructor(event) {
     super();
     this._event = event;
-    this._callback = {};
     this._editClick = this._editClick.bind(this);
   }
 
