@@ -50,15 +50,18 @@ export default class InfoView extends AbstractView {
         </section>`
       );
     }
+
+    const sortedEventsByDate = this._events.slice().sort((a, b) => a.dateFrom - b.dateFrom);
+
     return (
       `<section class="trip-main__trip-info  trip-info">
         <div class="trip-info__main">
-          <h1 class="trip-info__title">${destinationMarkup(this._events)}</h1>
-          ${datesMarkup(this._events)}
+          <h1 class="trip-info__title">${destinationMarkup(sortedEventsByDate)}</h1>
+          ${datesMarkup(sortedEventsByDate)}
         </div>
 
         <p class="trip-info__cost">
-          Total: &euro;&nbsp;<span class="trip-info__cost-value">${costMarkup(this._events)}</span>
+          Total: &euro;&nbsp;<span class="trip-info__cost-value">${costMarkup(sortedEventsByDate)}</span>
         </p>
       </section>`
     );

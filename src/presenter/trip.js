@@ -1,4 +1,3 @@
-import InfoView from '../view/info.js';
 import SortView from '../view/sort.js';
 import DaysListView from '../view/days-list.js';
 import DayView from '../view/day.js';
@@ -17,7 +16,6 @@ export default class Trip {
 
   init(events) {
     this._events = events.slice();
-    this._renderInfo(this._events);
 
     if (!this._events.length) {
       this._renderNoEvents();
@@ -27,19 +25,14 @@ export default class Trip {
     }
   }
 
-  _renderInfo(events) {
-    const headerMainEl = document.querySelector(`.trip-main`);
-
-    render(headerMainEl, new InfoView(events), `afterbegin`);
-  }
-
   _renderDayList(events) {
-    const days = new Set(events.map((event) => event.dateFrom.toLocaleDateString()));
+    const sortedEventsByDate = events.slice().sort((a, b) => a.dateFrom - b.dateFrom);
+    const days = new Set(sortedEventsByDate.map((event) => event.dateFrom.toLocaleDateString()));
 
     render(this._container, this._dayListComponent);
 
     [...days].forEach((day, index) => {
-      this._renderDay(day, index, events);
+      this._renderDay(day, index, sortedEventsByDate);
     });
   }
 
