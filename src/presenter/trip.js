@@ -32,22 +32,20 @@ export default class Trip {
     render(this._container, this._dayListComponent);
 
     if (this._currentSortType !== `sort-event`) {
-      this._renderDay(null, null, 0);
+      this._renderDay(null, null);
 
     } else {
 
       const days = new Set(this._events.map((event) => event.dateFrom.toISOString().substring(0, 10)));
 
       [...days].forEach((day, index) => {
-        this._renderDay(day, index, this._events);
+        this._renderDay(day, index);
       });
     }
   }
 
   _renderDay(day, index) {
     const dayComponent = new DayView(day, index);
-
-    render(this._dayListComponent, dayComponent);
 
     if (!day) {
       this._events.forEach((event) => {
@@ -61,6 +59,8 @@ export default class Trip {
         this._renderEvent(dayComponent.getElement().querySelector(`.trip-events__list`), event);
       });
     }
+
+    render(this._dayListComponent, dayComponent);
   }
 
   _renderEvent(container, event) {
