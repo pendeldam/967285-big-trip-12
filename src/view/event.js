@@ -1,6 +1,7 @@
-import {formatTime, formatDuration, createElement} from '../utils.js';
+import AbstractView from './abstract.js';
+import {formatTime, formatDuration} from '../utils/event.js';
 
-const createOffersMarkup = (offers) => {
+const createOfferItemMarkup = (offers) => {
   return offers.slice(0, 3).map((offer) => {
     return (
       `<li class="event__offer">
@@ -12,9 +13,9 @@ const createOffersMarkup = (offers) => {
   }).join(`\n`);
 };
 
-const createEventOffersEl = (offers) => {
+const createOffersListMarkup = (offers) => {
   return (
-    `<ul class="event__selected-offers">${createOffersMarkup(offers)}</ul>`
+    `<ul class="event__selected-offers">${createOfferItemMarkup(offers)}</ul>`
   );
 };
 
@@ -46,7 +47,7 @@ const createTripEventMarkup = (event) => {
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>
-        ${offers ? createEventOffersEl(offers) : ``}
+        ${offers ? createOffersListMarkup(offers) : ``}
 
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
@@ -56,25 +57,23 @@ const createTripEventMarkup = (event) => {
   );
 };
 
-export default class EventView {
+export default class EventView extends AbstractView {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
+    this._editClick = this._editClick.bind(this);
   }
 
   getTemplate() {
     return createTripEventMarkup(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _editClick() {
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClick);
   }
 }

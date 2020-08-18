@@ -1,4 +1,4 @@
-import {getRandomIntegerNumber, getRandomArrayItem, getRandomArray} from '../utils.js';
+import {getRandomIntegerNumber, getRandomArrayItem, getRandomArray} from '../utils/event.js';
 import {EVENT_TYPE, EVENT_DESTINATION, EVENT_DESCRIPTION, EVENTS_OFFERS} from '../const.js';
 
 const generateRandomText = () => getRandomArrayItem(EVENT_DESCRIPTION.split(`.`));
