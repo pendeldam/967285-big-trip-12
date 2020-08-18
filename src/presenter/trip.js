@@ -35,7 +35,8 @@ export default class Trip {
       this._renderDay(null, null, 0);
 
     } else {
-      const days = new Set(this._events.map((event) => event.dateFrom.toLocaleDateString()));
+
+      const days = new Set(this._events.map((event) => event.dateFrom.toISOString().substring(0, 10)));
 
       [...days].forEach((day, index) => {
         this._renderDay(day, index, this._events);
@@ -43,8 +44,8 @@ export default class Trip {
     }
   }
 
-  _renderDay(day, index, events) {
-    const dayComponent = new DayView(day, index, events);
+  _renderDay(day, index) {
+    const dayComponent = new DayView(day, index);
 
     render(this._dayListComponent, dayComponent);
 
@@ -54,7 +55,7 @@ export default class Trip {
       });
 
     } else {
-      const eventsByDay = events.filter((event) => event.dateFrom.toLocaleDateString() === day);
+      const eventsByDay = this._events.filter((event) => event.dateFrom.toISOString().substring(0, 10) === day);
 
       eventsByDay.forEach((event) => {
         this._renderEvent(dayComponent.getElement().querySelector(`.trip-events__list`), event);
