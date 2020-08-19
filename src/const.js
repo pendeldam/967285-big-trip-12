@@ -1,3 +1,9 @@
+export const SortType = {
+  DEFAULT: `sort-event`,
+  DURATION: `sort-time`,
+  PRICE: `sort-price`
+};
+
 export const EVENT_TYPE = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 export const EVENT_DESTINATION = [`Paris`, `Amsterdam`, `Berlin`, `Prague`, `Rome`, `Barcelona`, `London`];
 export const EVENT_DESCRIPTION = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.

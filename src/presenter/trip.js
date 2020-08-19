@@ -5,6 +5,7 @@ import EventView from '../view/event.js';
 import EventEditView from '../view/event-edit.js';
 import NoEventsView from '../view/no-events.js';
 import {render, replace} from '../utils/render.js';
+import {SortType} from '../const.js';
 
 export default class Trip {
   constructor(container) {
@@ -12,6 +13,8 @@ export default class Trip {
     this._dayListComponent = new DaysListView();
     this._sortComponent = new SortView();
     this._noEventsComponent = new NoEventsView();
+    this._currentSortType = null;
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(events) {
@@ -21,32 +24,44 @@ export default class Trip {
       this._renderNoEvents();
     } else {
       this._renderSort();
-      this._renderDayList(this._events);
+      this._sortEvents(SortType.DEFAULT);
+      this._renderEvents();
     }
   }
 
-  _renderDayList(events) {
-    const sortedEventsByDate = events.slice().sort((a, b) => a.dateFrom - b.dateFrom);
-    const days = new Set(sortedEventsByDate.map((event) => event.dateFrom.toLocaleDateString()));
-
+  _renderEvents() {
     render(this._container, this._dayListComponent);
 
-    [...days].forEach((day, index) => {
-      this._renderDay(day, index, sortedEventsByDate);
-    });
+    if (this._currentSortType !== SortType.DEFAULT) {
+      this._renderDay(null, null);
+
+    } else {
+
+      const days = new Set(this._events.map((event) => event.dateFrom.toISOString().substring(0, 10)));
+
+      [...days].forEach((day, index) => {
+        this._renderDay(day, index);
+      });
+    }
   }
 
-  _renderDay(day, index, events) {
-    const dayComponent = new DayView(day, index, events);
+  _renderDay(day, index) {
+    const dayComponent = new DayView(day, index);
+
+    if (!day) {
+      this._events.forEach((event) => {
+        this._renderEvent(dayComponent.getElement().querySelector(`.trip-events__list`), event);
+      });
+
+    } else {
+      const eventsByDay = this._events.filter((event) => event.dateFrom.toISOString().substring(0, 10) === day);
+
+      eventsByDay.forEach((event) => {
+        this._renderEvent(dayComponent.getElement().querySelector(`.trip-events__list`), event);
+      });
+    }
 
     render(this._dayListComponent, dayComponent);
-
-    const eventsToday = events.filter((event) => event.dateFrom.toLocaleDateString() === day);
-
-    eventsToday.forEach((event) => {
-      this._renderEvent(dayComponent.getElement().querySelector(`.trip-events__list`), event);
-    });
-
   }
 
   _renderEvent(container, event) {
@@ -89,5 +104,36 @@ export default class Trip {
 
   _renderSort() {
     render(this._container, this._sortComponent);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+  }
+
+  _sortEvents(sortType) {
+    switch (sortType) {
+      case SortType.DEFAULT:
+        this._events.sort((a, b) => a.dateFrom - b.dateFrom);
+        break;
+      case SortType.DURATION:
+        this._events.sort((a, b) => b.duration - a.duration);
+        break;
+      case SortType.PRICE:
+        this._events.sort((a, b) => b.price - a.price);
+        break;
+    }
+
+    this._currentSortType = sortType;
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortEvents(sortType);
+    this._clearDayList();
+    this._renderEvents();
+  }
+
+  _clearDayList() {
+    this._dayListComponent.getElement().innerHTML = ``;
   }
 }
