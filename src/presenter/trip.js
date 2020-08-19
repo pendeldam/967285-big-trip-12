@@ -5,6 +5,7 @@ import EventView from '../view/event.js';
 import EventEditView from '../view/event-edit.js';
 import NoEventsView from '../view/no-events.js';
 import {render, replace} from '../utils/render.js';
+import {SortType} from '../const.js';
 
 export default class Trip {
   constructor(container) {
@@ -23,7 +24,7 @@ export default class Trip {
       this._renderNoEvents();
     } else {
       this._renderSort();
-      this._sortEvents(`sort-event`);
+      this._sortEvents(SortType.DEFAULT);
       this._renderEvents();
     }
   }
@@ -31,7 +32,7 @@ export default class Trip {
   _renderEvents() {
     render(this._container, this._dayListComponent);
 
-    if (this._currentSortType !== `sort-event`) {
+    if (this._currentSortType !== SortType.DEFAULT) {
       this._renderDay(null, null);
 
     } else {
@@ -108,13 +109,13 @@ export default class Trip {
 
   _sortEvents(sortType) {
     switch (sortType) {
-      case `sort-event`:
+      case SortType.DEFAULT:
         this._events.sort((a, b) => a.dateFrom - b.dateFrom);
         break;
-      case `sort-time`:
+      case SortType.DURATION:
         this._events.sort((a, b) => b.duration - a.duration);
         break;
-      case `sort-price`:
+      case SortType.PRICE:
         this._events.sort((a, b) => b.price - a.price);
         break;
     }
