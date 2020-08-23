@@ -2,14 +2,14 @@ import AbstractView from './abstract.js';
 
 const destinationMarkup = (events) => {
   if (events.length > 3) {
-    return `${events[0].destination.name} &mdash; ... &mdash; ${events[events.length - 1].destination.name}`;
+    return `${events[0].destination} &mdash; ... &mdash; ${events[events.length - 1].destination}`;
   }
 
   return events.map((event, index) => {
     if (index !== events.length - 1) {
-      return `${event.destination.name} &mdash; `;
+      return `${event.destination} &mdash; `;
     }
-    return event.destination.name;
+    return event.destination;
   }).join(``);
 };
 

@@ -4,8 +4,8 @@ export const SortType = {
   PRICE: `sort-price`
 };
 
-export const EVENT_TYPE = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
-export const EVENT_DESTINATION = [`Paris`, `Amsterdam`, `Berlin`, `Prague`, `Rome`, `Barcelona`, `London`];
+export const EVENT_TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
+export const EVENT_DESTINATIONS = [`Paris`, `Amsterdam`, `Berlin`, `Prague`, `Rome`, `Barcelona`, `London`];
 export const EVENT_DESCRIPTION = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                                   Cras aliquet varius magna, non porta ligula feugiat eget.
                                   Fusce tristique felis at fermentum pharetra.
@@ -18,62 +18,42 @@ export const EVENT_DESCRIPTION = `Lorem ipsum dolor sit amet, consectetur adipis
                                   Nunc fermentum tortor ac porta dapibus.
                                   In rutrum ac purus sit amet tempus.`;
 
-export const EVENTS_OFFERS = [
+export const EVENT_OFFERS = [
   {
-    type: `Taxi`,
-    offers: [
-      {
-        id: `business`,
-        title: `Business class`,
-        price: 120
-      }, {
-        id: `radio`,
-        title: `Choose radio`,
-        price: 60
-      }
-    ]
+    id: `business`,
+    title: `Business class`,
+    price: 120
   }, {
-    type: `Flight`,
-    offers: [
-      {
-        id: `luggage`,
-        title: `Add luggage`,
-        price: 30
-      }, {
-        id: `meal`,
-        title: `Add meal`,
-        price: 15
-      }, {
-        id: `comfort`,
-        title: `Comfort class`,
-        price: 100
-      }, {
-        id: `test`,
-        title: `test`,
-        price: 1
-      }
-    ]
+    id: `radio`,
+    title: `Choose radio`,
+    price: 60
   }, {
-    type: `Sightseeing`,
-    offers: [
-      {
-        id: `tickets`,
-        title: `Book tickets`,
-        price: 40
-      }, {
-        id: `lunch`,
-        title: `Lunch in city`,
-        price: 30
-      }
-    ]
+    id: `luggage`,
+    title: `Add luggage`,
+    price: 30
   }, {
-    type: `Drive`,
-    offers: [
-      {
-        id: `car`,
-        title: `Rent a car`,
-        price: 200
-      }
-    ]
+    id: `meal`,
+    title: `Add meal`,
+    price: 15
+  }, {
+    id: `comfort`,
+    title: `Comfort class`,
+    price: 100
+  }, {
+    id: `tickets`,
+    title: `Book tickets`,
+    price: 40
+  }, {
+    id: `lunch`,
+    title: `Lunch in city`,
+    price: 30
+  }, {
+    id: `car`,
+    title: `Rent a car`,
+    price: 200
+  }, {
+    id: `comfort`,
+    title: `Comfort class`,
+    price: 100
   }
 ];

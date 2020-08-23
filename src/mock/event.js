@@ -1,14 +1,6 @@
-import {getRandomIntegerNumber, getRandomArrayItem, getRandomArray} from '../utils/event.js';
-import {EVENT_TYPE, EVENT_DESTINATION, EVENT_DESCRIPTION, EVENTS_OFFERS} from '../const.js';
-
-const generateRandomText = () => getRandomArrayItem(EVENT_DESCRIPTION.split(`.`));
-
-const generateRandomPhoto = () => {
-  return {
-    src: `http://picsum.photos/248/152?r=${Math.random()}`,
-    description: getRandomArrayItem(EVENT_DESCRIPTION.split(`.`))
-  };
-};
+import {getRandomIntegerNumber, getRandomArrayItem} from '../utils/event.js';
+import {EVENT_TYPES, EVENT_DESTINATIONS} from '../const.js';
+import {offers} from '../main.js';
 
 const generateRandomDate = () => {
   const dateStart = new Date();
@@ -25,8 +17,8 @@ const generateRandomDate = () => {
   return {dateStart, dateEnd, duration};
 };
 
-const getEventOffers = (type, offers) => {
-  for (const offer of offers) {
+const getEventOffers = (type, array) => {
+  for (const offer of array) {
     if (offer.type === type) {
       let result = [];
       offer.offers.forEach((it) => {
@@ -45,7 +37,7 @@ export const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
     .map((event, index) => {
-      const type = getRandomArrayItem(EVENT_TYPE);
+      const type = getRandomArrayItem(EVENT_TYPES);
       const date = generateRandomDate();
 
       event = {
@@ -56,12 +48,8 @@ export const generateEvents = (count) => {
         dateFrom: date.dateStart,
         dateTo: date.dateEnd,
         duration: date.duration,
-        destination: {
-          name: getRandomArrayItem(EVENT_DESTINATION),
-          description: getRandomArray(getRandomIntegerNumber(1, 6), generateRandomText).join(`\n`),
-          photos: getRandomArray(getRandomIntegerNumber(1, 6), generateRandomPhoto),
-        },
-        offers: getEventOffers(type, EVENTS_OFFERS)
+        destination: getRandomArrayItem(EVENT_DESTINATIONS),
+        offers: getEventOffers(type, offers)
       };
 
       return event;
