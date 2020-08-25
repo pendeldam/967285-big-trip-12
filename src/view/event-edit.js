@@ -190,6 +190,7 @@ export default class EventEdit extends SmartView {
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._dateChangeHandler = this._dateChangeHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatePicker();
@@ -223,10 +224,27 @@ export default class EventEdit extends SmartView {
           // eslint-disable-next-line camelcase
           time_24hr: true,
           defaultDate: date,
-          minDate: limit
+          minDate: limit,
+          onChange: this._dateChangeHandler
         })
       });
     });
+  }
+
+  _dateChangeHandler([date], str, picker) {
+    if (picker.element.name === `event-start-time`) {
+      if (date > this._datepicker[`event-end-time`].latestSelectedDateObj) {
+        this.updateData({
+          dateFrom: date,
+          dateTo: null});
+      } else {
+        this.updateData({dateFrom: date});
+      }
+    } else {
+      this.updateData({
+        dateTo: date
+      });
+    }
   }
 
   reset(task) {
@@ -243,24 +261,6 @@ export default class EventEdit extends SmartView {
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-list`).addEventListener(`change`, this._typeChangeHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
-
-    const inputs = this.getElement().querySelectorAll(`.event__input--time`);
-
-    [...inputs].forEach((input) => {
-      input.addEventListener(`change`, (evt) => {
-        if (evt.target.name === `event-start-time`) {
-          if (this._datepicker[`event-start-time`].latestSelectedDateObj > this._datepicker[`event-end-time`].latestSelectedDateObj) {
-            this.updateData({
-              dateFrom: this._datepicker[evt.target.name].latestSelectedDateObj,
-              dateTo: null});
-          } else {
-            this.updateData({dateFrom: this._datepicker[evt.target.name].latestSelectedDateObj});
-          }
-        } else {
-          this.updateData({dateTo: this._datepicker[evt.target.name].latestSelectedDateObj});
-        }
-      });
-    });
   }
 
   setSubmitFormHandler(callback) {
