@@ -3,10 +3,16 @@ import SiteMenuView from './view/site-menu.js';
 import FilterView from './view/filter.js';
 import TripPresenter from './presenter/trip.js';
 import {generateEvents} from './mock/event.js';
+import {generateDetails} from './mock/description.js';
+import {generateOffers} from './mock/offer.js';
 import {render} from './utils/render.js';
+
+export const offers = generateOffers();
+const details = generateDetails();
 
 const TRIP_EVENTS_COUNT = 20;
 const events = generateEvents(TRIP_EVENTS_COUNT);
+
 const headerMainEl = document.querySelector(`.trip-main`);
 const headerControlsEl = headerMainEl.querySelector(`.trip-controls`);
 const mainTripEventsEl = document.querySelector(`.trip-events`);
@@ -16,4 +22,4 @@ render(headerControlsEl.querySelector(`h2`), new SiteMenuView(), `afterend`);
 render(headerControlsEl, new FilterView());
 
 const tripPresenter = new TripPresenter(mainTripEventsEl);
-tripPresenter.init(events);
+tripPresenter.init(events, details, offers);
