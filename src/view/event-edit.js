@@ -236,14 +236,16 @@ export default class EventEdit extends SmartView {
       if (date > this._datepicker[`event-end-time`].latestSelectedDateObj) {
         this.updateData({
           dateFrom: date,
-          dateTo: null});
+          dateTo: null}, true);
+
+        this._datepicker[`event-end-time`].set(`_minDate`, date);
       } else {
-        this.updateData({dateFrom: date});
+        this.updateData({dateFrom: date}, true);
+        this._datepicker[`event-end-time`].set(`_minDate`, date);
       }
+
     } else {
-      this.updateData({
-        dateTo: date
-      });
+      this.updateData({dateTo: date}, true);
     }
   }
 
