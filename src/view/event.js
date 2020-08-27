@@ -20,10 +20,16 @@ const createOffersListMarkup = (offers) => {
 };
 
 const createTripEventMarkup = (event) => {
-  const {type, price, destination, dateFrom, dateTo, duration, offers} = event;
-  const ISOdateFrom = dateFrom.toISOString().split(`.`);
-  const ISOdateTo = dateTo.toISOString().split(`.`);
+  const {type, price, destination, dateFrom, dateTo, offers} = event;
   const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(type) ? `in` : `to`;
+
+  const isDateAvailable = (date) => {
+    if (!date) {
+      return ``;
+    }
+
+    return `${date.toISOString().split(`.`)}">${formatTime(date)}`;
+  };
 
   return (
     `<li class="trip-events__item">
@@ -35,11 +41,11 @@ const createTripEventMarkup = (event) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${ISOdateFrom[0].slice(0, 16)}">${formatTime(dateFrom)}</time>
+            <time class="event__start-time" datetime="${isDateAvailable(dateFrom)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${ISOdateTo[0].slice(0, 16)}">${formatTime(dateTo)}</time>
+            <time class="event__end-time" datetime="${isDateAvailable(dateTo)}</time>
           </p>
-          <p class="event__duration">${formatDuration(duration)}</p>
+          <p class="event__duration">${(dateFrom && dateTo) ? formatDuration(dateFrom, dateTo) : ``}</p>
         </div>
 
         <p class="event__price">

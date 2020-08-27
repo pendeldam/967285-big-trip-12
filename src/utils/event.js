@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
 };
@@ -12,29 +14,18 @@ export const getRandomArray = (length, cb) => {
     .map(cb);
 };
 
-const castTimeFormat = (value) => {
-  return String(value).padStart(2, `0`);
-};
-
 export const formatTime = (date) => {
-  const hours = castTimeFormat(date.getHours());
-  const minutes = castTimeFormat(date.getMinutes());
-
-  return `${hours}:${minutes}`;
+  return moment(date).format(`HH:mm`);
 };
 
-export const formatDuration = (value) => {
-  const days = Math.floor(value / 1440);
-  const hours = Math.floor((value - (days * 1440)) / 60);
-  const minutes = (value - (days * 1440)) - (60 * hours);
+export const formatDuration = (dateFrom, dateTo) => {
+  const diff = moment(dateFrom).diff(dateTo);
+  const duration = moment.duration(diff);
+  const days = duration.days() ? `${String(duration.days()).replace(`-`, ``).padStart(2, `0`)}D` : ``;
+  const hours = duration.hours() ? `${String(duration.hours()).replace(`-`, ``).padStart(2, `0`)}H` : ``;
+  const minutes = duration.minutes() ? `${String(duration.minutes()).replace(`-`, ``).padStart(2, `0`)}M` : ``;
 
-  if (value >= 1440) {
-    return `${castTimeFormat(days)}D ${castTimeFormat(hours)}H ${castTimeFormat(minutes)}M`;
-  } else if (value >= 60 && value < 1440) {
-    return `${castTimeFormat(hours)}H ${castTimeFormat(minutes)}M`;
-  } else {
-    return `${castTimeFormat(minutes)}M`;
-  }
+  return `${days} ${hours} ${minutes}`;
 };
 
 export const updateEvent = (array, event) => {

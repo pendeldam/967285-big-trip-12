@@ -1,6 +1,16 @@
 import SmartView from './smart.js';
 import {EVENT_TYPES, EVENT_DESTINATIONS} from '../const.js';
 import {formatTime} from '../utils/event.js';
+import flatpickr from 'flatpickr';
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+
+const BLANK_EVENT = {
+  price: 0,
+  destination: ``,
+  dateFrom: null,
+  dateTo: null,
+  offers: null
+};
 
 const isPropertyAvailable = (property, value, array, option) => {
   if (!value) {
@@ -77,9 +87,17 @@ const createOfferItemMarkup = (offers, type, event) => {
   }).join(`\n`);
 };
 
-const createTripEventEditMarkup = (event = {}, details, offers) => {
+const createTripEventEditMarkup = (event = BLANK_EVENT, details, offers) => {
   const {id, type, dateFrom, dateTo, price, destination, isFavorite} = event;
   const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(type) ? `in` : `to`;
+
+  const isDateAvailable = (date) => {
+    if (!date) {
+      return ``;
+    }
+
+    return `${date.toLocaleDateString()} ${formatTime(date)}`;
+  };
 
   return (
     `<li class="trip-events__item">
@@ -119,12 +137,12 @@ const createTripEventEditMarkup = (event = {}, details, offers) => {
           <label class="visually-hidden" for="event-start-time-${id}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${dateFrom.toLocaleDateString()} ${formatTime(dateFrom)}">
+          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${isDateAvailable(dateFrom)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-${id}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${dateTo.toLocaleDateString()} ${formatTime(dateTo)}">
+          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${isDateAvailable(dateTo)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -166,15 +184,69 @@ export default class EventEdit extends SmartView {
     this._data = EventEdit.parseEventToData(event);
     this._details = details;
     this._offers = offers;
+    this._datepicker = null;
+
     this._submitFormHandler = this._submitFormHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._dateChangeHandler = this._dateChangeHandler.bind(this);
+
     this._setInnerHandlers();
+    this._setDatePicker();
   }
 
   getTemplate() {
     return createTripEventEditMarkup(this._data, this._details, this._offers);
+  }
+
+  _setDatePicker() {
+    if (this._datepicker) {
+      Object.values(this._datepicker).forEach((it) => {
+        it.destroy();
+      });
+
+      this._datepicker = null;
+    }
+
+    const inputs = this.getElement().querySelectorAll(`.event__input--time`);
+
+    [...inputs].forEach((input) => {
+      const date = input.name === `event-start-time` ? this._data.dateFrom : this._data.dateTo;
+      const limit = input.name === `event-end-time` ? this._data.dateFrom : null;
+
+      this._datepicker = Object.assign({}, this._datepicker, {
+        [input.name]: flatpickr(input, {
+          altInput: true,
+          altFormat: `d/m/y H:i`,
+          allowInput: true,
+          enableTime: true,
+          // eslint-disable-next-line camelcase
+          time_24hr: true,
+          defaultDate: date,
+          minDate: limit,
+          onChange: this._dateChangeHandler
+        })
+      });
+    });
+  }
+
+  _dateChangeHandler([date], str, picker) {
+    if (picker.element.name === `event-start-time`) {
+      if (date > this._datepicker[`event-end-time`].latestSelectedDateObj) {
+        this.updateData({
+          dateFrom: date,
+          dateTo: null}, true);
+
+        this._datepicker[`event-end-time`].set(`_minDate`, date);
+      } else {
+        this.updateData({dateFrom: date}, true);
+        this._datepicker[`event-end-time`].set(`_minDate`, date);
+      }
+
+    } else {
+      this.updateData({dateTo: date}, true);
+    }
   }
 
   reset(task) {
@@ -185,6 +257,7 @@ export default class EventEdit extends SmartView {
     this._setInnerHandlers();
     this.setFavoriteClickHandler(this._callback.favoriteClick);
     this.setSubmitFormHandler(this._callback.submitForm);
+    this._setDatePicker();
   }
 
   _setInnerHandlers() {
