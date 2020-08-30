@@ -51,7 +51,7 @@ export default class InfoView extends AbstractView {
       );
     }
 
-    const sortedEventsByDate = this._events.slice().sort((a, b) => a.dateFrom - b.dateFrom);
+    const sortedEventsByDate = this._events.sort((a, b) => a.dateFrom - b.dateFrom);
 
     return (
       `<section class="trip-main__trip-info  trip-info">

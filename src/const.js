@@ -1,7 +1,13 @@
+export const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};
+
 export const SortType = {
-  DEFAULT: `sort-event`,
-  DURATION: `sort-time`,
-  PRICE: `sort-price`
+  DEFAULT: `event`,
+  DURATION: `time`,
+  PRICE: `price`
 };
 
 export const UserAction = {

@@ -74,7 +74,6 @@ const createOfferItemMarkup = (offers, type, event) => {
     const index = event.offers !== null ? event.offers.findIndex((it) => it.title === offer.title) : -1;
     const isChecked = index !== -1 ? `checked` : ``;
 
-
     return (
       `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}-${event.id}" type="checkbox" name="event-offer-${offer.id}" ${isChecked}>
@@ -188,12 +187,13 @@ export default class EventEdit extends SmartView {
     this._datepicker = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
-    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
+    this._offerChangeHandler = this._offerChangeHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatePicker();
@@ -250,6 +250,10 @@ export default class EventEdit extends SmartView {
     this.getElement().querySelector(`.event__type-list`).addEventListener(`change`, this._typeChangeHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
     this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceChangeHandler);
+
+    if (this._data.offers) {
+      this.getElement().querySelector(`.event__offer-checkbox`).addEventListener(`click`, this._offerChangeHandler);
+    }
   }
 
   setSubmitFormHandler(callback) {
@@ -310,6 +314,11 @@ export default class EventEdit extends SmartView {
     this.updateData({
       price: evt.target.value
     });
+  }
+
+  _offerChangeHandler(evt) {
+    evt.preventDefault();
+    // console.log(evt.target);
   }
 
   _favoriteClickHandler(evt) {

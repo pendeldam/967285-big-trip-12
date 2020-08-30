@@ -1,9 +1,10 @@
+import SiteMenuView from './view/site-menu.js';
+import FilterModel from './model/filter.js';
 import EventsModel from './model/events.js';
 import OffersModel from './model/offers.js';
 import DetailsModel from './model/details.js';
-import InfoView from './view/info.js';
-import SiteMenuView from './view/site-menu.js';
-import FilterView from './view/filter.js';
+import InfoPresenter from './presenter/info.js';
+import FilterPresenter from './presenter/filter.js';
 import TripPresenter from './presenter/trip.js';
 import {generateEvents} from './mock/event.js';
 import {generateDetails} from './mock/description.js';
@@ -20,6 +21,7 @@ const headerMainEl = document.querySelector(`.trip-main`);
 const headerControlsEl = headerMainEl.querySelector(`.trip-controls`);
 const mainTripEventsEl = document.querySelector(`.trip-events`);
 
+const filterModel = new FilterModel();
 const eventsModel = new EventsModel();
 const offersModel = new OffersModel();
 const detailsModel = new DetailsModel();
@@ -28,9 +30,12 @@ eventsModel.setEvents(events);
 offersModel.setOffers(offers);
 detailsModel.setDetails(details);
 
-render(headerMainEl, new InfoView(events), `afterbegin`);
 render(headerControlsEl.querySelector(`h2`), new SiteMenuView(), `afterend`);
-render(headerControlsEl, new FilterView());
 
-const tripPresenter = new TripPresenter(mainTripEventsEl, eventsModel, detailsModel, offersModel);
+const infoPresenter = new InfoPresenter(headerMainEl, eventsModel);
+const tripPresenter = new TripPresenter(mainTripEventsEl, eventsModel, detailsModel, offersModel, filterModel);
+const filterPresenter = new FilterPresenter(headerControlsEl, filterModel);
+
+infoPresenter.init();
+filterPresenter.init();
 tripPresenter.init();
