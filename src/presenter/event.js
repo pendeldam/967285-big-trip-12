@@ -1,6 +1,8 @@
 import EventView from '../view/event.js';
 import EventEditView from '../view/event-edit.js';
 import {render, replace, remove} from '../utils/render.js';
+import {UserAction, UpdateType} from '../const.js';
+import {isEqual} from '../utils/event.js';
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -21,6 +23,7 @@ export default class Event {
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
   init(event, details, offers) {
@@ -35,6 +38,7 @@ export default class Event {
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setSubmitFormHandler(this._handleFormSubmit);
     this._eventEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (!prevEventComponent || !prevEventEditComponent) {
       render(this._container, this._eventComponent);
@@ -91,13 +95,34 @@ export default class Event {
     this._replaceEventToEdit();
   }
 
-  _handleFormSubmit(event) {
-    this._changeData(event);
+  _handleFormSubmit(update) {
+    const isMinorUpdate =
+      !isEqual(this._event.price, update.price) ||
+      !isEqual(this._event.duration, update.duration);
+
+    this._changeData(
+        UserAction.UPDATE_EVENT,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        update
+    );
+
     this._replaceEventEditToEvent();
   }
 
   _handleFavoriteClick() {
-    this._changeData(Object.assign(
-        {}, this._event, {isFavorite: !this._event.isFavorite}));
+    this._changeData(
+        UserAction.UPDATE_EVENT,
+        UpdateType.PATCH,
+        Object.assign(
+            {}, this._event, {isFavorite: !this._event.isFavorite})
+    );
+  }
+
+  _handleDeleteClick(event) {
+    this._changeData(
+        UserAction.DELETE_EVENT,
+        UpdateType.MINOR,
+        event
+    );
   }
 }

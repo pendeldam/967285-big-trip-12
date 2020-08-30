@@ -3,6 +3,7 @@ import {EVENT_TYPES, EVENT_DESTINATIONS} from '../const.js';
 import {formatTime} from '../utils/event.js';
 import flatpickr from 'flatpickr';
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+import moment from "moment";
 
 const BLANK_EVENT = {
   price: 0,
@@ -186,11 +187,13 @@ export default class EventEdit extends SmartView {
     this._offers = offers;
     this._datepicker = null;
 
-    this._submitFormHandler = this._submitFormHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
+    this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatePicker();
@@ -231,24 +234,6 @@ export default class EventEdit extends SmartView {
     });
   }
 
-  _dateChangeHandler([date], str, picker) {
-    if (picker.element.name === `event-start-time`) {
-      if (date > this._datepicker[`event-end-time`].latestSelectedDateObj) {
-        this.updateData({
-          dateFrom: date,
-          dateTo: null}, true);
-
-        this._datepicker[`event-end-time`].set(`_minDate`, date);
-      } else {
-        this.updateData({dateFrom: date}, true);
-        this._datepicker[`event-end-time`].set(`_minDate`, date);
-      }
-
-    } else {
-      this.updateData({dateTo: date}, true);
-    }
-  }
-
   reset(task) {
     this.updateData(EventEdit.parseEventToData(task));
   }
@@ -257,22 +242,52 @@ export default class EventEdit extends SmartView {
     this._setInnerHandlers();
     this.setFavoriteClickHandler(this._callback.favoriteClick);
     this.setSubmitFormHandler(this._callback.submitForm);
+    this.setDeleteClickHandler(this._callback.deleteClick);
     this._setDatePicker();
   }
 
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-list`).addEventListener(`change`, this._typeChangeHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceChangeHandler);
   }
 
   setSubmitFormHandler(callback) {
     this._callback.submitForm = callback;
-    this.getElement().addEventListener(`submit`, this._submitFormHandler);
+    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
 
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector(`.event__favorite-checkbox`).addEventListener(`click`, this._favoriteClickHandler);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
+  _dateChangeHandler([date], str, picker) {
+    if (picker.element.name === `event-start-time`) {
+      if (date > this._datepicker[`event-end-time`].latestSelectedDateObj) {
+        this.updateData({
+          dateFrom: date,
+          dateTo: null,
+        }, true);
+
+        this._datepicker[`event-end-time`].set(`_minDate`, date);
+      } else {
+        this.updateData({
+          dateFrom: date,
+        }, true);
+        this._datepicker[`event-end-time`].set(`_minDate`, date);
+      }
+
+    } else {
+      this.updateData({
+        dateTo: date,
+      }, true);
+    }
   }
 
   _typeChangeHandler(evt) {
@@ -290,14 +305,31 @@ export default class EventEdit extends SmartView {
     });
   }
 
-  _submitFormHandler(evt) {
+  _priceChangeHandler(evt) {
     evt.preventDefault();
-    this._callback.submitForm(EventEdit.parseDataToEvent(this._data));
+    this.updateData({
+      price: evt.target.value
+    });
   }
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
     this._callback.favoriteClick();
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    if (!this._data.dateFrom || !this._data.dateTo) {
+      this._data.duration = null;
+    } else {
+      this._data.duration = moment(this._data.dateFrom).diff(this._data.dateTo);
+    }
+    this._callback.submitForm(EventEdit.parseDataToEvent(this._data));
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEdit.parseDataToEvent(this._data));
   }
 
   static parseEventToData(event) {

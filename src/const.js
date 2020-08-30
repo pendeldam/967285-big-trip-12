@@ -4,6 +4,18 @@ export const SortType = {
   PRICE: `sort-price`
 };
 
+export const UserAction = {
+  UPDATE_EVENT: `UPDATE_EVENT`,
+  ADD_EVENT: `ADD_EVENT`,
+  DELETE_EVENT: `DELETE_EVENT`
+};
+
+export const UpdateType = {
+  PATCH: `PATCH`,
+  MINOR: `MINOR`,
+  MAJOR: `MAJOR`
+};
+
 export const EVENT_TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 export const EVENT_DESTINATIONS = [`Paris`, `Amsterdam`, `Berlin`, `Prague`, `Rome`, `Barcelona`, `London`];
 export const EVENT_DESCRIPTION = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.

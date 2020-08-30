@@ -4,39 +4,76 @@ import DayView from '../view/day.js';
 import NoEventsView from '../view/no-events.js';
 import EventPresenter from './event.js';
 import {render, remove} from '../utils/render.js';
-import {SortType} from '../const.js';
-import {updateEvent} from '../utils/event.js';
+import {SortType, UserAction, UpdateType} from '../const.js';
 
 export default class Trip {
-  constructor(container) {
+  constructor(container, eventsModel, detailsModel, offersModel) {
     this._container = container;
+    this._eventsModel = eventsModel;
+    this._detailsModel = detailsModel;
+    this._offersModel = offersModel;
     this._eventPresenter = {};
     this._dayListComponent = new DaysListView();
     this._sortComponent = new SortView();
     this._noEventsComponent = new NoEventsView();
-    this._currentSortType = null;
+    this._currentSortType = SortType.DEFAULT;
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-    this._handleEventChange = this._handleEventChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+
+    this._eventsModel.addObserver(this._handleModelEvent);
   }
 
-  init(events, details, offers) {
-    this._events = events.slice();
-    this._details = details.slice();
-    this._offers = offers.slice();
+  _getEvents() {
+    switch (this._currentSortType) {
+      case SortType.DURATION:
+        return this._eventsModel.getEvents().slice().sort((a, b) => a.duration - b.duration);
+      case SortType.PRICE:
+        return this._eventsModel.getEvents().slice().sort((a, b) => b.price - a.price);
+    }
 
-    if (!this._events.length) {
+    return this._eventsModel.getEvents().slice().sort((a, b) => a.dateFrom - b.dateFrom);
+  }
+
+  init() {
+    if (!this._getEvents().length) {
       this._renderNoEvents();
     } else {
       this._renderSort();
-      this._sortEvents(SortType.DEFAULT);
       this._renderEvents();
     }
   }
 
-  _handleEventChange(updatedEvent) {
-    this._events = updateEvent(this._events, updatedEvent);
-    this._eventPresenter[updatedEvent.id].init(updatedEvent, this._details, this._offers);
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this._eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_EVENT:
+        this._eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_EVENT:
+        this._eventsModel.deleteEvent(updateType, update);
+        break;
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this._eventPresenter[data.id].init(data, this._detailsModel.getDetails(), this._offersModel.getOffers());
+        break;
+      case UpdateType.MINOR:
+        this._clearDayList();
+        this._renderEvents();
+        break;
+      case UpdateType.MAJOR:
+        // resetSortType: true
+        this._clearDayList();
+        this._renderEvents();
+        break;
+    }
   }
 
   _handleModeChange() {
@@ -54,7 +91,7 @@ export default class Trip {
 
     } else {
 
-      const days = new Set(this._events.map((event) => event.dateFrom.toISOString().substring(0, 10)));
+      const days = new Set(this._getEvents().map((event) => event.dateFrom.toISOString().substring(0, 10)));
 
       [...days].forEach((day, index) => {
         this._renderDay(day, index);
@@ -66,14 +103,14 @@ export default class Trip {
     const dayComponent = new DayView(day, index);
 
     if (!day) {
-      this._events.forEach((event) => {
+      this._getEvents().forEach((event) => {
         this._renderEvent(dayComponent.getElement().querySelector(`.trip-events__list`), event);
       });
 
       this._dayList.push(dayComponent);
 
     } else {
-      const eventsByDay = this._events.filter((event) => event.dateFrom.toISOString().substring(0, 10) === day);
+      const eventsByDay = this._getEvents().filter((event) => event.dateFrom.toISOString().substring(0, 10) === day);
 
       eventsByDay.forEach((event) => {
         this._renderEvent(dayComponent.getElement().querySelector(`.trip-events__list`), event);
@@ -86,8 +123,8 @@ export default class Trip {
   }
 
   _renderEvent(container, event) {
-    const eventPresenter = new EventPresenter(container, this._handleEventChange, this._handleModeChange);
-    eventPresenter.init(event, this._details, this._offers);
+    const eventPresenter = new EventPresenter(container, this._handleViewAction, this._handleModeChange);
+    eventPresenter.init(event, this._detailsModel.getDetails(), this._offersModel.getOffers());
     this._eventPresenter[event.id] = eventPresenter;
   }
 
@@ -100,28 +137,12 @@ export default class Trip {
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
-  _sortEvents(sortType) {
-    switch (sortType) {
-      case SortType.DEFAULT:
-        this._events.sort((a, b) => a.dateFrom - b.dateFrom);
-        break;
-      case SortType.DURATION:
-        this._events.sort((a, b) => b.duration - a.duration);
-        break;
-      case SortType.PRICE:
-        this._events.sort((a, b) => b.price - a.price);
-        break;
-    }
-
-    this._currentSortType = sortType;
-  }
-
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
     }
 
-    this._sortEvents(sortType);
+    this._currentSortType = sortType;
     this._clearDayList();
     this._renderEvents();
   }

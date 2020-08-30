@@ -28,12 +28,6 @@ export const formatDuration = (dateFrom, dateTo) => {
   return `${days} ${hours} ${minutes}`;
 };
 
-export const updateEvent = (array, event) => {
-  const index = array.findIndex((it) => it.id === event.id);
-
-  if (index === -1) {
-    return array;
-  }
-
-  return [...array.slice(0, index), event, ...array.slice(index + 1)];
+export const isEqual = (a, b) => {
+  return (a === b) ? true : false;
 };

@@ -1,6 +1,7 @@
 import {getRandomIntegerNumber, getRandomArrayItem} from '../utils/event.js';
 import {EVENT_TYPES, EVENT_DESTINATIONS} from '../const.js';
 import {offers} from '../main.js';
+import moment from "moment";
 
 const generateRandomDate = () => {
   const dateStart = new Date();
@@ -12,7 +13,7 @@ const generateRandomDate = () => {
 
   const dateEnd = new Date(dateStart);
   dateEnd.setMinutes(dateEnd.getMinutes() + getRandomIntegerNumber(30, 2500));
-  const duration = (dateEnd.getTime() - dateStart.getTime()) / 60000;
+  const duration = moment(dateStart).diff(dateEnd);
 
   return {dateStart, dateEnd, duration};
 };
