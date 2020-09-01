@@ -224,6 +224,18 @@ export default class EventEdit extends SmartView {
     return createTripEventEditMarkup(details, offers, this._data, this._isNewEvent);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepicker) {
+      Object.values(this._datepicker).forEach((it) => {
+        it.destroy();
+      });
+
+      this._datepicker = null;
+    }
+  }
+
   _setDatePicker() {
     if (this._datepicker) {
       Object.values(this._datepicker).forEach((it) => {
@@ -377,13 +389,6 @@ export default class EventEdit extends SmartView {
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.submitForm(EventEdit.parseDataToEvent(this._data));
-    if (this._datepicker) {
-      Object.values(this._datepicker).forEach((it) => {
-        it.destroy();
-      });
-
-      this._datepicker = null;
-    }
   }
 
   _favoriteClickHandler(evt) {
@@ -394,13 +399,6 @@ export default class EventEdit extends SmartView {
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
     this._callback.deleteClick(EventEdit.parseDataToEvent(this._data));
-    if (this._datepicker) {
-      Object.values(this._datepicker).forEach((it) => {
-        it.destroy();
-      });
-
-      this._datepicker = null;
-    }
   }
 
   static parseEventToData(event) {
