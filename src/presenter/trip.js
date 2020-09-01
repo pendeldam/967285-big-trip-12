@@ -17,6 +17,7 @@ export default class Trip {
     this._offersModel = offersModel;
     this._filterModel = filterModel;
     this._eventPresenter = {};
+    this._dayList = [];
     this._currentSortType = SortType.DEFAULT;
 
     this._sortComponent = null;
@@ -109,7 +110,6 @@ export default class Trip {
 
   _renderEvents() {
     render(this._container, this._dayListComponent);
-    this._dayList = [];
 
     if (this._currentSortType !== SortType.DEFAULT) {
       this._renderDay(null, null);
@@ -185,10 +185,14 @@ export default class Trip {
       this._currentSortType = SortType.DEFAULT;
     }
 
+    if (this._dayList.length) {
+      this._dayList.forEach((day) => remove(day));
+    }
+
     Object.values(this._eventPresenter)
       .forEach((presenter) => presenter.destroy());
 
-    this._dayList.forEach((day) => remove(day));
+
     remove(this._sortComponent);
     remove(this._noEventsComponent);
 

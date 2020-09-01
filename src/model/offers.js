@@ -3,7 +3,7 @@ import Observer from '../utils/observer.js';
 export default class Offers extends Observer {
   constructor() {
     super();
-    this._offers = [];
+    this._offers = null;
   }
 
   getOffers() {
@@ -11,6 +11,6 @@ export default class Offers extends Observer {
   }
 
   setOffers(offers) {
-    this._offers = offers.slice();
+    this._offers = offers;
   }
 }

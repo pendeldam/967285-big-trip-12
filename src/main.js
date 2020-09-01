@@ -7,14 +7,11 @@ import InfoPresenter from './presenter/info.js';
 import FilterPresenter from './presenter/filter.js';
 import TripPresenter from './presenter/trip.js';
 import {generateEvents} from './mock/event.js';
-import {generateDetails} from './mock/description.js';
-import {generateOffers} from './mock/offer.js';
+import {details} from './mock/description.js';
+import {options} from './mock/offer.js';
 import {render} from './utils/render.js';
 
-export const details = generateDetails();
-export const offers = generateOffers();
-
-const TRIP_EVENTS_COUNT = 5;
+const TRIP_EVENTS_COUNT = 0;
 const events = generateEvents(TRIP_EVENTS_COUNT);
 
 const headerMainEl = document.querySelector(`.trip-main`);
@@ -27,7 +24,7 @@ const offersModel = new OffersModel();
 const detailsModel = new DetailsModel();
 
 eventsModel.setEvents(events);
-offersModel.setOffers(offers);
+offersModel.setOffers(options);
 detailsModel.setDetails(details);
 
 render(headerControlsEl.querySelector(`h2`), new SiteMenuView(), `afterend`);

@@ -1,6 +1,6 @@
 import {getRandomIntegerNumber, getRandomArrayItem} from '../utils/event.js';
-import {EVENT_TYPES} from '../const.js';
-import {details, offers} from '../main.js';
+import {options} from './offer.js';
+import {details} from './description.js';
 
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
@@ -37,7 +37,7 @@ export const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
     .map((event, index) => {
-      const type = getRandomArrayItem(EVENT_TYPES);
+      const type = getRandomArrayItem([...options.keys()]);
       const date = generateRandomDate();
 
       event = {
@@ -47,8 +47,8 @@ export const generateEvents = (count) => {
         isFavorite: Math.random() > 0.5 ? false : true,
         dateFrom: date.dateStart,
         dateTo: date.dateEnd,
-        destination: getRandomArrayItem(details),
-        offers: getEventOffers(type, offers)
+        destination: getRandomArrayItem([...details.values()]),
+        offers: getEventOffers(type, [...options.values()])
       };
 
       return event;

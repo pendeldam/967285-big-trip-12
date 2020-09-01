@@ -1,12 +1,11 @@
 import he from 'he';
 import SmartView from './smart.js';
-import {EVENT_TYPES, EVENT_DESTINATIONS} from '../const.js';
 import {formatTime} from '../utils/event.js';
 import flatpickr from 'flatpickr';
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
-  type: EVENT_TYPES[0],
+  type: `Taxi`,
   price: 0,
   destination: {
     name: ``,
@@ -30,21 +29,19 @@ const createTypesMarkup = (types) => {
   }).join(`\n`);
 };
 
-const createDestinationsMarkup = (destinations) => {
-  return destinations.map((destination) => `<option value="${destination}"></option>`).join(`\n`);
+const createDestinationsMarkup = (details) => {
+  return [...details.values()].map((destination) => `<option value="${destination.name}"></option>`).join(`\n`);
 };
 
-const createDescriptionMarkup = (array, name) => {
-  const target = array.find((it) => it.name === name);
-
+const createDescriptionMarkup = (destination, details) => {
   const createPhotosMarkup = () => {
-    return target.pictures.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join(`\n`);
+    return details.get(destination.name).pictures.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join(`\n`);
   };
 
   return (
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${target.description}</p>
+      <p class="event__destination-description">${details.get(destination.name).description}</p>
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
@@ -65,9 +62,7 @@ const createOffersListMarkup = (offers, type, event) => {
 };
 
 const createOfferItemMarkup = (offers, type, event) => {
-  const target = offers.find((it) => it.type === type);
-
-  return target.offers.map((offer) => {
+  return offers.get(type).offers.map((offer) => {
     const id = offer.title.toLowerCase().split(` `).join(`-`);
     const index = event.offers.length ? event.offers.findIndex((it) => it.title === offer.title) : -1;
     const isChecked = index !== -1 ? `checked` : ``;
@@ -97,15 +92,13 @@ const isDetailsAvailable = (destination, details) => {
     return false;
   }
 
-  const target = details.find((it) => it.name === destination.name);
-
-  return target ? Boolean(target.description.length) : false;
+  return details.get(destination.name)
+    ? Boolean(details.get(destination.name).description)
+    : false;
 };
 
 const isOffersAvailable = (type, offers) => {
-  const target = offers.find((offer) => offer.type === type);
-
-  return Boolean(target.offers.length);
+  return Boolean(offers.get(type).offers.length);
 };
 
 const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
@@ -134,12 +127,12 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
-              ${createTypesMarkup(EVENT_TYPES.slice(0, 7))}
+              ${createTypesMarkup([...offers.keys()].slice(0, 7))}
             </fieldset>
 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
-              ${createTypesMarkup(EVENT_TYPES.slice(7))}
+              ${createTypesMarkup([...offers.keys()].slice(7))}
             </fieldset>
           </div>
         </div>
@@ -150,7 +143,7 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination ? destination.name : ``}" list="destination-list-${id}" required>
           <datalist id="destination-list-${id}">
-            ${createDestinationsMarkup(EVENT_DESTINATIONS)}
+            ${createDestinationsMarkup(details)}
           </datalist>
         </div>
 
@@ -195,7 +188,7 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
 
       <section class="event__details">
       ${isOffersAvailable(type, offers) ? createOffersListMarkup(offers, type, event) : ``}
-      ${isDetailsAvailable(destination, details) ? createDescriptionMarkup(details, destination.name) : ``}
+      ${isDetailsAvailable(destination, details) ? createDescriptionMarkup(destination, details) : ``}
       </section>
     </form>
     </li>`
@@ -316,9 +309,9 @@ export default class EventEdit extends SmartView {
   _destinationChangeHandler(evt) {
     evt.preventDefault();
 
-    const index = this._detailsModel.getDetails().findIndex((it) => it.name === evt.target.value);
-
-    const update = index !== -1 ? this._detailsModel.getDetails()[index] : null;
+    const update = this._detailsModel.getDetails().has(evt.target.value)
+      ? this._detailsModel.getDetails().get(evt.target.value)
+      : null;
 
     this.updateData({
       destination: update
@@ -383,8 +376,14 @@ export default class EventEdit extends SmartView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    console.log(this._data);
     this._callback.submitForm(EventEdit.parseDataToEvent(this._data));
+    if (this._datepicker) {
+      Object.values(this._datepicker).forEach((it) => {
+        it.destroy();
+      });
+
+      this._datepicker = null;
+    }
   }
 
   _favoriteClickHandler(evt) {
@@ -395,6 +394,13 @@ export default class EventEdit extends SmartView {
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
     this._callback.deleteClick(EventEdit.parseDataToEvent(this._data));
+    if (this._datepicker) {
+      Object.values(this._datepicker).forEach((it) => {
+        it.destroy();
+      });
+
+      this._datepicker = null;
+    }
   }
 
   static parseEventToData(event) {
