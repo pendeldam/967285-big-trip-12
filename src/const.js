@@ -38,39 +38,30 @@ export const EVENT_DESCRIPTION = `Lorem ipsum dolor sit amet, consectetur adipis
 
 export const EVENT_OFFERS = [
   {
-    id: `business`,
     title: `Business class`,
     price: 120
   }, {
-    id: `radio`,
     title: `Choose radio`,
     price: 60
   }, {
-    id: `luggage`,
     title: `Add luggage`,
     price: 30
   }, {
-    id: `meal`,
     title: `Add meal`,
     price: 15
   }, {
-    id: `comfort`,
     title: `Comfort class`,
     price: 100
   }, {
-    id: `tickets`,
     title: `Book tickets`,
     price: 40
   }, {
-    id: `lunch`,
     title: `Lunch in city`,
     price: 30
   }, {
-    id: `car`,
     title: `Rent a car`,
     price: 200
   }, {
-    id: `comfort`,
     title: `Comfort class`,
     price: 100
   }

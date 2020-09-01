@@ -11,10 +11,10 @@ import {generateDetails} from './mock/description.js';
 import {generateOffers} from './mock/offer.js';
 import {render} from './utils/render.js';
 
-const details = generateDetails();
+export const details = generateDetails();
 export const offers = generateOffers();
 
-const TRIP_EVENTS_COUNT = 20;
+const TRIP_EVENTS_COUNT = 5;
 const events = generateEvents(TRIP_EVENTS_COUNT);
 
 const headerMainEl = document.querySelector(`.trip-main`);
@@ -39,3 +39,10 @@ const filterPresenter = new FilterPresenter(headerControlsEl, filterModel);
 infoPresenter.init();
 filterPresenter.init();
 tripPresenter.init();
+
+headerMainEl
+  .querySelector(`.trip-main__event-add-btn`)
+  .addEventListener(`click`, (evt) => {
+    evt.preventDefault();
+    tripPresenter.createEvent();
+  });

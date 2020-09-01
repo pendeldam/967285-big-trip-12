@@ -8,7 +8,7 @@ export const generateOffers = () => {
 
     for (let i = 0; i < count; i++) {
       const offer = getRandomArrayItem(EVENT_OFFERS);
-      const index = offers.findIndex((it) => it.id === offer.id);
+      const index = offers.findIndex((it) => it.title === offer.title);
 
       if (index === -1) {
         offers.push(offer);

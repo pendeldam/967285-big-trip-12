@@ -1,7 +1,8 @@
 import {getRandomIntegerNumber, getRandomArrayItem} from '../utils/event.js';
-import {EVENT_TYPES, EVENT_DESTINATIONS} from '../const.js';
-import {offers} from '../main.js';
-import moment from "moment";
+import {EVENT_TYPES} from '../const.js';
+import {details, offers} from '../main.js';
+
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const generateRandomDate = () => {
   const dateStart = new Date();
@@ -13,25 +14,23 @@ const generateRandomDate = () => {
 
   const dateEnd = new Date(dateStart);
   dateEnd.setMinutes(dateEnd.getMinutes() + getRandomIntegerNumber(30, 2500));
-  const duration = moment(dateStart).diff(dateEnd);
 
-  return {dateStart, dateEnd, duration};
+  return {dateStart, dateEnd};
 };
 
 const getEventOffers = (type, array) => {
+  let result = [];
+
   for (const offer of array) {
     if (offer.type === type) {
-      let result = [];
       offer.offers.forEach((it) => {
         if (Math.random() > 0.5) {
           result.push(it);
         }
       });
-      result = result.length ? result : null;
-      return result;
     }
   }
-  return null;
+  return result;
 };
 
 export const generateEvents = (count) => {
@@ -48,8 +47,7 @@ export const generateEvents = (count) => {
         isFavorite: Math.random() > 0.5 ? false : true,
         dateFrom: date.dateStart,
         dateTo: date.dateEnd,
-        duration: date.duration,
-        destination: getRandomArrayItem(EVENT_DESTINATIONS),
+        destination: getRandomArrayItem(details),
         offers: getEventOffers(type, offers)
       };
 

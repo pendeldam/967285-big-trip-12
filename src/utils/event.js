@@ -28,6 +28,18 @@ export const formatDuration = (dateFrom, dateTo) => {
   return `${days} ${hours} ${minutes}`;
 };
 
+export const sortByDefault = (eventA, eventB) => {
+  return eventA.dateFrom - eventB.dateFrom;
+};
+
+export const sortByTime = (eventA, eventB) => {
+  return (moment(eventA.dateFrom).diff(eventA.dateTo)) - (moment(eventB.dateFrom).diff(eventB.dateTo));
+};
+
+export const sortByPrice = (eventA, eventB) => {
+  return eventB.price - eventA.price;
+};
+
 export const isEqual = (a, b) => {
   return (a === b) ? true : false;
 };

@@ -17,7 +17,7 @@ export const generateDetails = () => {
     return {
       name: destination,
       description,
-      photos: description ? getRandomArray(getRandomIntegerNumber(1, 6), generateRandomPhoto) : ``
+      pictures: description ? getRandomArray(getRandomIntegerNumber(1, 6), generateRandomPhoto) : ``
     };
   });
 };

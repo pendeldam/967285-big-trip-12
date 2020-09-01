@@ -18,7 +18,7 @@ export default class SortView extends AbstractView {
               class="trip-sort__input  visually-hidden"
               type="radio"
               name="trip-sort"
-              value="sort-${type}"
+              value="${type}"
               ${this._currentSortType === type ? `checked` : ``}
             >
             <label class="trip-sort__btn" for="sort-${type}">${type}</label>
@@ -37,8 +37,12 @@ export default class SortView extends AbstractView {
   }
 
   _sortTypeChangeHandler(evt) {
+    if (evt.target.tagName !== `INPUT`) {
+      return;
+    }
+
     evt.preventDefault();
-    this._callback.sortTypeChange(evt.target.textContent);
+    this._callback.sortTypeChange(evt.target.value);
   }
 
   setSortTypeChangeHandler(callback) {

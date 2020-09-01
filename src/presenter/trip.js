@@ -3,8 +3,10 @@ import DaysListView from '../view/days-list.js';
 import DayView from '../view/day.js';
 import NoEventsView from '../view/no-events.js';
 import EventPresenter from './event.js';
+import EventNewPresenter from './event-new.js';
 import {render, remove} from '../utils/render.js';
-import {SortType, UserAction, UpdateType} from '../const.js';
+import {sortByTime, sortByPrice, sortByDefault} from '../utils/event.js';
+import {SortType, UserAction, UpdateType, FilterType} from '../const.js';
 import {filter} from '../utils/filter.js';
 
 export default class Trip {
@@ -28,10 +30,18 @@ export default class Trip {
 
     this._eventsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._eventNewPresenter = new EventNewPresenter(this._dayListComponent, this._handleViewAction, this._detailsModel, this._offersModel);
   }
 
   init() {
     this._renderTrip();
+  }
+
+  createEvent() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._eventNewPresenter.init();
   }
 
   _getEvents() {
@@ -41,12 +51,12 @@ export default class Trip {
 
     switch (this._currentSortType) {
       case SortType.DURATION:
-        return filteredEvents.sort((a, b) => a.duration - b.duration);
+        return filteredEvents.sort(sortByTime);
       case SortType.PRICE:
-        return filteredEvents.sort((a, b) => b.price - a.price);
+        return filteredEvents.sort(sortByPrice);
     }
 
-    return filteredEvents.sort((a, b) => a.dateFrom - b.dateFrom);
+    return filteredEvents.sort(sortByDefault);
   }
 
   _handleViewAction(actionType, updateType, update) {
@@ -66,7 +76,7 @@ export default class Trip {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        this._eventPresenter[data.id].init(data, this._detailsModel.getDetails(), this._offersModel.getOffers());
+        this._eventPresenter[data.id].init(data);
         break;
       case UpdateType.MINOR:
         this._clearTrip();
@@ -80,6 +90,8 @@ export default class Trip {
   }
 
   _handleModeChange() {
+    this._eventNewPresenter.destroy();
+
     Object
       .values(this._eventPresenter)
       .forEach((presenter) => presenter.resetView());
@@ -136,8 +148,8 @@ export default class Trip {
   }
 
   _renderEvent(container, event) {
-    const eventPresenter = new EventPresenter(container, this._handleViewAction, this._handleModeChange);
-    eventPresenter.init(event, this._detailsModel.getDetails(), this._offersModel.getOffers());
+    const eventPresenter = new EventPresenter(container, this._handleViewAction, this._handleModeChange, this._detailsModel, this._offersModel);
+    eventPresenter.init(event);
     this._eventPresenter[event.id] = eventPresenter;
   }
 
@@ -167,6 +179,8 @@ export default class Trip {
   }
 
   _clearTrip(resetSortType = false) {
+    this._eventNewPresenter.destroy();
+
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
     }
