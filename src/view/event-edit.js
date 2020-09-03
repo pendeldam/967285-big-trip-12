@@ -1,6 +1,7 @@
 import he from 'he';
 import SmartView from './smart.js';
 import {formatTime} from '../utils/event.js';
+import {EVENT_TYPES} from '../const.js';
 import flatpickr from 'flatpickr';
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
@@ -35,7 +36,11 @@ const createDestinationsMarkup = (details) => {
 
 const createDescriptionMarkup = (destination, details) => {
   const createPhotosMarkup = () => {
-    return details.get(destination.name).pictures.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join(`\n`);
+    return details.get(destination.name).pictures.length
+      ? details.get(destination.name).pictures
+          .map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`)
+          .join(`\n`)
+      : ``;
   };
 
   return (
@@ -127,12 +132,12 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
-              ${createTypesMarkup([...offers.keys()].slice(0, 7))}
+              ${createTypesMarkup(EVENT_TYPES.slice(0, 7))}
             </fieldset>
 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
-              ${createTypesMarkup([...offers.keys()].slice(7))}
+              ${createTypesMarkup(EVENT_TYPES.slice(7))}
             </fieldset>
           </div>
         </div>

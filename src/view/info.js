@@ -1,4 +1,5 @@
 import AbstractView from './abstract.js';
+import moment from "moment";
 
 const destinationMarkup = (events) => {
   if (events.length > 3) {
@@ -15,27 +16,26 @@ const destinationMarkup = (events) => {
 
 const datesMarkup = (events) => {
   const dateFrom = events[0].dateFrom
-    ? events[0].dateFrom.toLocaleDateString(`en-US`, {month: `short`, day: `2-digit`})
+    ? moment(events[0].dateFrom).format(`MMM DD`)
     : ``;
   const dateTo = events[events.length - 1]
-    ? events[events.length - 1].dateTo.toLocaleDateString(`en-US`, {month: `short`, day: `2-digit`})
+    ? moment(events[events.length - 1]).format(`MMM DD`)
     : ``;
 
   return `<p class="trip-info__dates">${dateFrom}&nbsp;&mdash;&nbsp;${dateTo}</p>`;
 };
 
 const costMarkup = (events) => {
-  let result = 0;
+  let sum = {price: 0};
 
   for (const event of events) {
-    if (event.offers.length) {
-      const cost = event.offers.reduce((acc, val) => ({price: acc.price + val.price}));
-      result += event.price + cost.price;
-    } else {
-      result += event.price;
-    }
+    let cost = event.offers.reduce((acc, val) =>
+      ({price: acc.price + val.price}), {price: event.price});
+
+    sum.price += cost.price;
   }
-  return result;
+
+  return sum.price;
 };
 
 export default class InfoView extends AbstractView {

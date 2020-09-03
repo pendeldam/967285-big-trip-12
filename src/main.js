@@ -7,7 +7,7 @@ import InfoPresenter from './presenter/info.js';
 import FilterPresenter from './presenter/filter.js';
 import TripPresenter from './presenter/trip.js';
 import {generateEvents} from './mock/event.js';
-import {details} from './mock/description.js';
+import {details} from './mock/details.js';
 import {options} from './mock/offer.js';
 import {render} from './utils/render.js';
 

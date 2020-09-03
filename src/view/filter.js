@@ -31,6 +31,7 @@ export default class FilterView extends AbstractView {
 
     this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
   }
+
   getTemplate() {
     return (
       `<form class="trip-filters" action="#" method="get">
@@ -44,6 +45,7 @@ export default class FilterView extends AbstractView {
     evt.preventDefault();
     this._callback.filterTypeChange(evt.target.value);
   }
+
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
     this.getElement().addEventListener(`change`, this._filterTypeChangeHandler);

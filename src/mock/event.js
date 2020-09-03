@@ -1,6 +1,6 @@
 import {getRandomIntegerNumber, getRandomArrayItem} from '../utils/event.js';
 import {options} from './offer.js';
-import {details} from './description.js';
+import {details} from './details.js';
 
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
