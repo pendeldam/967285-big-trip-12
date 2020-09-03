@@ -19,7 +19,7 @@ const datesMarkup = (events) => {
     ? moment(events[0].dateFrom).format(`MMM DD`)
     : ``;
   const dateTo = events[events.length - 1]
-    ? moment(events[events.length - 1]).format(`MMM DD`)
+    ? moment(events[events.length - 1].dateTo).format(`MMM DD`)
     : ``;
 
   return `<p class="trip-info__dates">${dateFrom}&nbsp;&mdash;&nbsp;${dateTo}</p>`;
