@@ -10,7 +10,8 @@ import StatsView from './view/stats.js';
 import {generateEvents} from './mock/event.js';
 import {details} from './mock/details.js';
 import {options} from './mock/offer.js';
-import {render} from './utils/render.js';
+import {render, remove} from './utils/render.js';
+import {MenuItem, UpdateType, FilterType} from './const.js';
 
 const TRIP_EVENTS_COUNT = 20;
 const events = generateEvents(TRIP_EVENTS_COUNT);
@@ -36,16 +37,56 @@ const infoPresenter = new InfoPresenter(headerMainEl, eventsModel);
 const tripPresenter = new TripPresenter(mainEl, eventsModel, detailsModel, offersModel, filterModel);
 const filterPresenter = new FilterPresenter(headerControlsEl, filterModel);
 
-const statsComponent = new StatsView(eventsModel.getEvents());
-render(mainEl, statsComponent);
+let statsComponent = null;
 
-infoPresenter.init();
-filterPresenter.init();
-tripPresenter.init();
+const handleNewEventFormClose = () => {
+  siteMenuComponent.getElement().querySelector(`.trip-tabs__btn`).classList.add(`trip-tabs__btn--active`);
+  headerMainEl.querySelector(`.trip-main__event-add-btn`).disabled = false;
+};
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TABLE:
+      tripPresenter.destroy();
+      remove(statsComponent);
+      tripPresenter.init();
+
+      siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.STATS}"]`).classList.remove(`trip-tabs__btn--active`);
+      siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.TABLE}"]`).classList.add(`trip-tabs__btn--active`);
+      break;
+    case MenuItem.STATS:
+      filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+      tripPresenter.destroy();
+      statsComponent = new StatsView(eventsModel.getEvents());
+      render(mainEl, statsComponent);
+
+      siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.TABLE}"]`).classList.remove(`trip-tabs__btn--active`);
+      siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.STATS}"]`).classList.add(`trip-tabs__btn--active`);
+      break;
+  }
+};
+
+siteMenuComponent.setSiteMenuClickHandler(handleSiteMenuClick);
 
 headerMainEl
   .querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, (evt) => {
     evt.preventDefault();
-    tripPresenter.createEvent();
+    evt.target.disabled = true;
+
+    if (statsComponent !== null) {
+      remove(statsComponent);
+    }
+
+    tripPresenter.destroy();
+    filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    tripPresenter.init();
+    tripPresenter.createEvent(handleNewEventFormClose);
+
+    siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.STATS}"]`).classList.remove(`trip-tabs__btn--active`);
+    siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.TABLE}"]`).classList.add(`trip-tabs__btn--active`);
   });
+
+infoPresenter.init();
+filterPresenter.init();
+tripPresenter.init();
