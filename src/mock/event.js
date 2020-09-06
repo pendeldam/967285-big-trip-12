@@ -1,6 +1,8 @@
 import {getRandomIntegerNumber, getRandomArrayItem} from '../utils/event.js';
-import {EVENT_TYPES, EVENT_DESTINATIONS} from '../const.js';
-import {offers} from '../main.js';
+import {options} from './offer.js';
+import {details} from './details.js';
+
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const generateRandomDate = () => {
   const dateStart = new Date();
@@ -12,32 +14,30 @@ const generateRandomDate = () => {
 
   const dateEnd = new Date(dateStart);
   dateEnd.setMinutes(dateEnd.getMinutes() + getRandomIntegerNumber(30, 2500));
-  const duration = (dateEnd.getTime() - dateStart.getTime()) / 60000;
 
-  return {dateStart, dateEnd, duration};
+  return {dateStart, dateEnd};
 };
 
 const getEventOffers = (type, array) => {
+  let result = [];
+
   for (const offer of array) {
     if (offer.type === type) {
-      let result = [];
       offer.offers.forEach((it) => {
         if (Math.random() > 0.5) {
           result.push(it);
         }
       });
-      result = result.length ? result : null;
-      return result;
     }
   }
-  return null;
+  return result;
 };
 
 export const generateEvents = (count) => {
   return new Array(count)
     .fill(``)
     .map((event, index) => {
-      const type = getRandomArrayItem(EVENT_TYPES);
+      const type = getRandomArrayItem([...options.keys()]);
       const date = generateRandomDate();
 
       event = {
@@ -47,9 +47,8 @@ export const generateEvents = (count) => {
         isFavorite: Math.random() > 0.5 ? false : true,
         dateFrom: date.dateStart,
         dateTo: date.dateEnd,
-        duration: date.duration,
-        destination: getRandomArrayItem(EVENT_DESTINATIONS),
-        offers: getEventOffers(type, offers)
+        destination: getRandomArrayItem([...details.values()]),
+        offers: getEventOffers(type, [...options.values()])
       };
 
       return event;

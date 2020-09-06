@@ -1,23 +1,20 @@
 import {EVENT_OFFERS, EVENT_TYPES} from '../const.js';
 import {getRandomIntegerNumber, getRandomArrayItem} from '../utils/event.js';
 
-export const generateOffers = () => {
-  return EVENT_TYPES.map((type) => {
-    let offers = [];
-    const count = getRandomIntegerNumber(0, 5);
+export const options = new Map();
 
-    for (let i = 0; i < count; i++) {
-      const offer = getRandomArrayItem(EVENT_OFFERS);
-      const index = offers.findIndex((it) => it.id === offer.id);
+EVENT_TYPES.forEach((type) => {
+  let offers = [];
+  const count = getRandomIntegerNumber(0, 5);
 
-      if (index === -1) {
-        offers.push(offer);
-      }
+  for (let i = 0; i < count; i++) {
+    const offer = getRandomArrayItem(EVENT_OFFERS);
+    const index = offers.findIndex((it) => it.title === offer.title);
+
+    if (index === -1) {
+      offers.push(offer);
     }
+  }
 
-    return {
-      type,
-      offers
-    };
-  });
-};
+  options.set(type, {type, offers});
+});

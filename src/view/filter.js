@@ -1,12 +1,22 @@
 import AbstractView from './abstract.js';
 
-const createFilterItemMarkup = (filters) => {
+const createFilterItemMarkup = (filters, currentFilterType) => {
   return filters
-    .map((filter, index) => {
+    .map((filter) => {
+      const {type, name} = filter;
+
       return (
         `<div class="trip-filters__filter">
-          <input id="filter-${filter.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter.toLowerCase()}" ${index === 0 ? `checked` : ``}>
-          <label class="trip-filters__filter-label" for="filter-${filter.toLowerCase()}">${filter}</label>
+          <input id="filter-${type}"
+            class="trip-filters__filter-input visually-hidden"
+            type="radio"
+            name="trip-filter"
+            value="${type}"
+            ${type === currentFilterType ? `checked` : ``}
+          >
+          <label class="trip-filters__filter-label" for="filter-${type}">
+            ${name}
+          </label>
         </div>`
       );
     })
@@ -14,14 +24,30 @@ const createFilterItemMarkup = (filters) => {
 };
 
 export default class FilterView extends AbstractView {
-  getTemplate() {
-    const filters = [`Everything`, `Future`, `Past`];
+  constructor(filters, currentFilterType) {
+    super();
+    this._filters = filters;
+    this._currentFilterType = currentFilterType;
 
+    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
+  }
+
+  getTemplate() {
     return (
       `<form class="trip-filters" action="#" method="get">
-        ${createFilterItemMarkup(filters)}
+        ${createFilterItemMarkup(this._filters, this._currentFilterType)}
         <button class="visually-hidden" type="submit">Accept filter</button>
       </form>`
     );
+  }
+
+  _filterTypeChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.filterTypeChange(evt.target.value);
+  }
+
+  setFilterTypeChangeHandler(callback) {
+    this._callback.filterTypeChange = callback;
+    this.getElement().addEventListener(`change`, this._filterTypeChangeHandler);
   }
 }

@@ -28,12 +28,18 @@ export const formatDuration = (dateFrom, dateTo) => {
   return `${days} ${hours} ${minutes}`;
 };
 
-export const updateEvent = (array, event) => {
-  const index = array.findIndex((it) => it.id === event.id);
+export const sortByDefault = (eventA, eventB) => {
+  return eventA.dateFrom - eventB.dateFrom;
+};
 
-  if (index === -1) {
-    return array;
-  }
+export const sortByTime = (eventA, eventB) => {
+  return (moment(eventA.dateFrom).diff(eventA.dateTo)) - (moment(eventB.dateFrom).diff(eventB.dateTo));
+};
 
-  return [...array.slice(0, index), event, ...array.slice(index + 1)];
+export const sortByPrice = (eventA, eventB) => {
+  return eventB.price - eventA.price;
+};
+
+export const isEqual = (a, b) => {
+  return (a === b) ? true : false;
 };
