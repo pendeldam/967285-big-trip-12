@@ -40,7 +40,6 @@ const filterPresenter = new FilterPresenter(headerControlsEl, filterModel);
 let statsComponent = null;
 
 const handleNewEventFormClose = () => {
-  siteMenuComponent.getElement().querySelector(`.trip-tabs__btn`).classList.add(`trip-tabs__btn--active`);
   headerMainEl.querySelector(`.trip-main__event-add-btn`).disabled = false;
 };
 
@@ -51,8 +50,7 @@ const handleSiteMenuClick = (menuItem) => {
       remove(statsComponent);
       tripPresenter.init();
 
-      siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.STATS}"]`).classList.remove(`trip-tabs__btn--active`);
-      siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.TABLE}"]`).classList.add(`trip-tabs__btn--active`);
+      siteMenuComponent.setMenuItem(MenuItem.TABLE, MenuItem.STATS);
       break;
     case MenuItem.STATS:
       filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
@@ -60,8 +58,7 @@ const handleSiteMenuClick = (menuItem) => {
       statsComponent = new StatsView(eventsModel.getEvents());
       render(mainEl, statsComponent);
 
-      siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.TABLE}"]`).classList.remove(`trip-tabs__btn--active`);
-      siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.STATS}"]`).classList.add(`trip-tabs__btn--active`);
+      siteMenuComponent.setMenuItem(MenuItem.STATS, MenuItem.TABLE);
       break;
   }
 };
@@ -83,8 +80,7 @@ headerMainEl
     tripPresenter.init();
     tripPresenter.createEvent(handleNewEventFormClose);
 
-    siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.STATS}"]`).classList.remove(`trip-tabs__btn--active`);
-    siteMenuComponent.getElement().querySelector(`a[data-title="${MenuItem.TABLE}"]`).classList.add(`trip-tabs__btn--active`);
+    siteMenuComponent.setMenuItem(MenuItem.TABLE, MenuItem.STATS);
   });
 
 infoPresenter.init();

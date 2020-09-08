@@ -22,7 +22,16 @@ export default class SiteMenuView extends AbstractView {
   }
 
   _menuClickHandler(evt) {
+    if (evt.target.classList.contains(`trip-tabs__btn--active`)) {
+      return;
+    }
+
     evt.preventDefault();
     this._callback.menuClickHandler(evt.target.textContent);
+  }
+
+  setMenuItem(enableItem, disableItem) {
+    this.getElement().querySelector(`[data-title=${enableItem}]`).classList.add(`trip-tabs__btn--active`);
+    this.getElement().querySelector(`[data-title=${disableItem}]`).classList.remove(`trip-tabs__btn--active`);
   }
 }
