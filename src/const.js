@@ -1,3 +1,8 @@
+export const MenuItem = {
+  TABLE: `Table`,
+  STATS: `Stats`
+};
+
 export const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
