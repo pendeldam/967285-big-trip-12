@@ -11,7 +11,7 @@ export const getCostByTypes = (events) => {
 };
 
 export const countTransportUsage = (events) => {
-  const types = [`Flight`, `Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`];
+  const types = [`flight`, `taxi`, `bus`, `train`, `ship`, `transport`, `drive`];
 
   return types
     .map((type) => {

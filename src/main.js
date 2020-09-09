@@ -1,3 +1,4 @@
+import Api from './api.js';
 import SiteMenuView from './view/site-menu.js';
 import FilterModel from './model/filter.js';
 import EventsModel from './model/events.js';
@@ -7,27 +8,33 @@ import InfoPresenter from './presenter/info.js';
 import FilterPresenter from './presenter/filter.js';
 import TripPresenter from './presenter/trip.js';
 import StatsView from './view/stats.js';
-import {generateEvents} from './mock/event.js';
-import {details} from './mock/details.js';
-import {options} from './mock/offer.js';
 import {render, remove} from './utils/render.js';
 import {MenuItem, UpdateType, FilterType} from './const.js';
-
-const TRIP_EVENTS_COUNT = 20;
-const events = generateEvents(TRIP_EVENTS_COUNT);
 
 const headerMainEl = document.querySelector(`.trip-main`);
 const headerControlsEl = headerMainEl.querySelector(`.trip-controls`);
 const mainEl = document.querySelector(`.trip-events`);
 
+const AUTHORIZATION = `Basic 809hfd21mnv376lk`;
+const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
+const api = new Api(END_POINT, AUTHORIZATION);
+
+api.getEvents()
+  .then((events) => eventsModel.setEvents(UpdateType.INIT, events))
+  .catch(() => eventsModel.setEvents(UpdateType.INIT, []));
+
+api.getDetails()
+  .then((details) => detailsModel.setDetails(details))
+  .catch(() => detailsModel.setDetails([]));
+
+api.getOffers()
+  .then((offers) => offersModel.setOffers(offers))
+  .catch(() => offersModel.setOffers([]));
+
 const filterModel = new FilterModel();
 const eventsModel = new EventsModel();
 const offersModel = new OffersModel();
 const detailsModel = new DetailsModel();
-
-eventsModel.setEvents(events);
-offersModel.setOffers(options);
-detailsModel.setDetails(details);
 
 const siteMenuComponent = new SiteMenuView();
 

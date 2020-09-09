@@ -2,6 +2,7 @@ import SortView from '../view/sort.js';
 import DaysListView from '../view/days-list.js';
 import DayView from '../view/day.js';
 import NoEventsView from '../view/no-events.js';
+import LoadingView from '../view/loading.js';
 import EventPresenter from './event.js';
 import EventNewPresenter from './event-new.js';
 import {render, remove} from '../utils/render.js';
@@ -19,10 +20,12 @@ export default class Trip {
     this._eventPresenter = {};
     this._dayList = [];
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
 
     this._sortComponent = null;
     this._dayListComponent = new DaysListView();
     this._noEventsComponent = new NoEventsView();
+    this._loadingComponent = new LoadingView();
 
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -94,6 +97,14 @@ export default class Trip {
         this._clearTrip(true);
         this._renderTrip();
         break;
+      case UpdateType.INIT:
+        console.log(this._eventsModel.getEvents());
+        console.log(this._detailsModel.getDetails());
+        console.log(this._offersModel.getOffers());
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderTrip();
+        break;
     }
   }
 
@@ -106,6 +117,11 @@ export default class Trip {
   }
 
   _renderTrip() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     if (!this._getEvents().length) {
       this._renderNoEvents();
       return;
@@ -164,6 +180,10 @@ export default class Trip {
     render(this._container, this._noEventsComponent);
   }
 
+  _renderLoading() {
+    render(this._container, this._loadingComponent);
+  }
+
   _renderSort() {
     if (!this._sortComponent) {
       this._sortComponent = null;
@@ -199,11 +219,11 @@ export default class Trip {
     Object.values(this._eventPresenter)
       .forEach((presenter) => presenter.destroy());
 
+    this._eventPresenter = {};
+    this._dayList = [];
 
     remove(this._sortComponent);
     remove(this._noEventsComponent);
-
-    this._eventPresenter = {};
-    this._dayList = [];
+    remove(this._loadingComponent);
   }
 }
