@@ -43,6 +43,10 @@ export default class Event {
       return;
     }
 
+    if (this._mode === Mode.DEFAULT) {
+      replace(this._eventComponent, prevEventComponent);
+    }
+
     if (this._mode === Mode.EDITING) {
       this._eventEditComponent = new EventEditView(this._detailsMode, this._offersModel, false, this._event);
       this._eventEditComponent.setSubmitFormHandler(this._handleFormSubmit);

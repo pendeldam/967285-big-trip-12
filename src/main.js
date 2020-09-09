@@ -41,7 +41,7 @@ const siteMenuComponent = new SiteMenuView();
 render(headerControlsEl.querySelector(`h2`), siteMenuComponent, `afterend`);
 
 const infoPresenter = new InfoPresenter(headerMainEl, eventsModel);
-const tripPresenter = new TripPresenter(mainEl, eventsModel, detailsModel, offersModel, filterModel);
+const tripPresenter = new TripPresenter(mainEl, eventsModel, detailsModel, offersModel, filterModel, api);
 const filterPresenter = new FilterPresenter(headerControlsEl, filterModel);
 
 let statsComponent = null;

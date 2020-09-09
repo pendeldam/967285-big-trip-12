@@ -11,12 +11,13 @@ import {SortType, UserAction, UpdateType, FilterType} from '../const.js';
 import {filter} from '../utils/filter.js';
 
 export default class Trip {
-  constructor(container, eventsModel, detailsModel, offersModel, filterModel) {
+  constructor(container, eventsModel, detailsModel, offersModel, filterModel, api) {
     this._container = container;
     this._eventsModel = eventsModel;
     this._detailsModel = detailsModel;
     this._offersModel = offersModel;
     this._filterModel = filterModel;
+    this._api = api;
     this._eventPresenter = {};
     this._dayList = [];
     this._currentSortType = SortType.DEFAULT;
@@ -73,7 +74,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventsModel.updateEvent(updateType, update);
+        this._api.updateEvent(update).then((response) => {
+          this._eventsModel.updateEvent(updateType, response);
+        });
         break;
       case UserAction.ADD_EVENT:
         this._eventsModel.addEvent(updateType, update);
