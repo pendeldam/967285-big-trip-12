@@ -98,9 +98,6 @@ export default class Trip {
         this._renderTrip();
         break;
       case UpdateType.INIT:
-        console.log(this._eventsModel.getEvents());
-        console.log(this._detailsModel.getDetails());
-        console.log(this._offersModel.getOffers());
         this._isLoading = false;
         remove(this._loadingComponent);
         this._renderTrip();
