@@ -19,27 +19,41 @@ const AUTHORIZATION = `Basic 809hfd21mnv376lk`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 const api = new Api(END_POINT, AUTHORIZATION);
 
-api.getEvents()
-  .then((events) => eventsModel.setEvents(UpdateType.INIT, events))
-  .catch(() => eventsModel.setEvents(UpdateType.INIT, []));
-
 api.getDetails()
-  .then((details) => detailsModel.setDetails(details))
-  .catch(() => detailsModel.setDetails([]));
-
-api.getOffers()
-  .then((offers) => offersModel.setOffers(offers))
-  .catch(() => offersModel.setOffers([]));
+  .then((details) => {
+    detailsModel.setDetails(details);
+    api.getOffers()
+      .then((offers) => {
+        offersModel.setOffers(offers);
+        api.getEvents()
+          .then((events) => {
+            eventsModel.setEvents(UpdateType.INIT, events);
+            render(headerControlsEl.querySelector(`h2`), siteMenuComponent, `afterend`);
+            siteMenuComponent.setSiteMenuClickHandler(handleSiteMenuClick);
+            filterPresenter.init();
+          })
+          .catch(() => {
+            eventsModel.setEvents(UpdateType.INIT, []);
+            render(headerControlsEl.querySelector(`h2`), siteMenuComponent, `afterend`);
+            siteMenuComponent.setSiteMenuClickHandler(handleSiteMenuClick);
+            filterPresenter.init();
+          });
+      })
+      .catch(() => {
+        eventsModel.setEvents(UpdateType.INIT, []);
+        headerMainEl.querySelector(`.trip-main__event-add-btn`).disabled = true;
+      });
+  })
+  .catch(() => {
+    eventsModel.setEvents(UpdateType.INIT, []);
+    headerMainEl.querySelector(`.trip-main__event-add-btn`).disabled = true;
+  });
 
 const filterModel = new FilterModel();
 const eventsModel = new EventsModel();
 const offersModel = new OffersModel();
 const detailsModel = new DetailsModel();
-
 const siteMenuComponent = new SiteMenuView();
-
-render(headerControlsEl.querySelector(`h2`), siteMenuComponent, `afterend`);
-
 const infoPresenter = new InfoPresenter(headerMainEl, eventsModel);
 const tripPresenter = new TripPresenter(mainEl, eventsModel, detailsModel, offersModel, filterModel, api);
 const filterPresenter = new FilterPresenter(headerControlsEl, filterModel);
@@ -70,8 +84,6 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
-siteMenuComponent.setSiteMenuClickHandler(handleSiteMenuClick);
-
 headerMainEl
   .querySelector(`.trip-main__event-add-btn`)
   .addEventListener(`click`, (evt) => {
@@ -91,5 +103,4 @@ headerMainEl
   });
 
 infoPresenter.init();
-filterPresenter.init();
 tripPresenter.init();

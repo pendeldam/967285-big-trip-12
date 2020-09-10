@@ -20,8 +20,8 @@ export default class Api {
 
   getEvents() {
     return this._load({url: `points`})
-      .then(Api.toJSON)
-      .then((events) => events.map(EventsModel.adaptToClient));
+    .then(Api.toJSON)
+    .then((events) => events.map(EventsModel.adaptToClient));
   }
 
   getDetails() {
