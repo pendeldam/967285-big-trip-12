@@ -1,6 +1,6 @@
 import he from 'he';
 import SmartView from './smart.js';
-import {formatTime} from '../utils/event.js';
+import {formatTime, formatType} from '../utils/event.js';
 import {EVENT_TYPES} from '../const.js';
 import flatpickr from 'flatpickr';
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
@@ -25,7 +25,7 @@ const createTypesMarkup = (types) => {
       `<div class="event__type-item">
         <input id="event-type-${type}-${index + 1}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
         <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${index + 1}">
-          ${type.replace(type.charAt(0), type.charAt(0).toUpperCase())}
+          ${formatType(type)}
         </label>
       </div>`
     );

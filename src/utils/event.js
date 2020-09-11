@@ -14,6 +14,10 @@ export const getRandomArray = (length, cb) => {
     .map(cb);
 };
 
+export const formatType = (type) => {
+  return type.replace(type.charAt(0), type.charAt(0).toUpperCase());
+};
+
 export const formatTime = (date) => {
   return moment(date).format(`HH:mm`);
 };
