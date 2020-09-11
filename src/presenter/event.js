@@ -36,14 +36,9 @@ export default class Event {
     const prevEventEditComponent = this._eventEditComponent;
 
     this._eventComponent = new EventView(event);
-    this._eventEditComponent = new EventEditView(this._detailsMode, this._offersModel, false, event);
-
     this._eventComponent.setEditClickHandler(this._handleEditClick);
-    this._eventEditComponent.setSubmitFormHandler(this._handleFormSubmit);
-    this._eventEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
-    if (!prevEventComponent || !prevEventEditComponent) {
+    if (!prevEventComponent) {
       render(this._container, this._eventComponent);
       return;
     }
@@ -53,6 +48,11 @@ export default class Event {
     }
 
     if (this._mode === Mode.EDITING) {
+      this._eventEditComponent = new EventEditView(this._detailsMode, this._offersModel, false, this._event);
+      this._eventEditComponent.setSubmitFormHandler(this._handleFormSubmit);
+      this._eventEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+      this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
+
       replace(this._eventEditComponent, prevEventEditComponent);
     }
 
@@ -72,6 +72,11 @@ export default class Event {
   }
 
   _replaceEventToEdit() {
+    this._eventEditComponent = new EventEditView(this._detailsMode, this._offersModel, false, this._event);
+    this._eventEditComponent.setSubmitFormHandler(this._handleFormSubmit);
+    this._eventEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
+
     replace(this._eventEditComponent, this._eventComponent);
     document.addEventListener(`keydown`, this._escKeydownHandler);
     this._changeMode();
@@ -82,12 +87,11 @@ export default class Event {
     replace(this._eventComponent, this._eventEditComponent);
     document.removeEventListener(`keydown`, this._escKeydownHandler);
     this._mode = Mode.DEFAULT;
+    remove(this._eventEditComponent);
   }
 
   _escKeydownHandler(evt) {
-    const isEscKey = evt.key === `Esc` || evt.key === `Escape`;
-
-    if (isEscKey) {
+    if (evt.key === `Esc` || evt.key === `Escape`) {
       evt.preventDefault();
       this._eventEditComponent.reset(this._event);
       this._replaceEventEditToEvent();
