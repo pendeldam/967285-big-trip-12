@@ -440,6 +440,7 @@ export default class EventEdit extends SmartView {
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.submitForm(EventEdit.parseDataToEvent(this._data));
+    this.removeElement();
   }
 
   _favoriteClickHandler(evt) {
