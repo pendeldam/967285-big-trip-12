@@ -5,77 +5,6 @@ import {getCostByTypes, countTransportUsage, getTimeByTypes} from '../utils/stat
 
 const BAR_HEIGHT = 55;
 
-const renderMoneyChart = (moneyCtx, events) => {
-  const prices = new Map(getCostByTypes(events));
-  moneyCtx.height = BAR_HEIGHT * prices.size;
-
-  return new Chart(moneyCtx, {
-    plugins: [ChartDataLabels],
-    type: `horizontalBar`,
-    data: {
-      labels: [...prices.keys()],
-      datasets: [{
-        data: [...prices.values()],
-        backgroundColor: `#ffffff`,
-        hoverBackgroundColor: `#ffffff`,
-        anchor: `start`,
-        minBarLength: 50
-      }]
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13
-          },
-          color: `#000000`,
-          anchor: `end`,
-          align: `start`,
-          formatter: (val) => `€ ${val}`
-        }
-      },
-      title: {
-        display: true,
-        text: `MONEY`,
-        fontColor: `#000000`,
-        fontSize: 23,
-        position: `left`
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: `#000000`,
-            padding: 5,
-            fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          // barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          // minBarLength: 50
-        }],
-      },
-      legend: {
-        display: false
-      },
-      tooltips: {
-        enabled: false,
-      }
-    }
-  });
-};
-
 const renderChart = (canvasCtx, events, title, label) => {
   canvasCtx.height = BAR_HEIGHT * events.size;
 
@@ -101,7 +30,7 @@ const renderChart = (canvasCtx, events, title, label) => {
           color: `#000000`,
           anchor: `end`,
           align: `start`,
-          formatter: (val) => `${val}${label}`
+          formatter: (val) => title === `MONEY` ? `${label} ${val}` : `${val}${label}`
         }
       },
       title: {
@@ -197,10 +126,11 @@ export default class Stats extends SmartView {
     const transportCtx = this.getElement().querySelector(`.statistics__chart--transport`);
     const timeSpendCtx = this.getElement().querySelector(`.statistics__chart--time`);
 
+    const prices = new Map(getCostByTypes(this._events));
     const transports = new Map(countTransportUsage(this._events));
     const durations = new Map(getTimeByTypes(this._events));
 
-    this._moneyChart = renderMoneyChart(moneyCtx, this._events);
+    this._moneyChart = renderChart(moneyCtx, prices, `MONEY`, `€`);
     this._transportChart = renderChart(transportCtx, transports, `TRANSPORT`, `x`);
     this._timeSpendChart = renderChart(timeSpendCtx, durations, `TIME SPENT`, `H`);
   }

@@ -49,7 +49,7 @@ const detailsModel = new DetailsModel();
 const siteMenuComponent = new SiteMenuView();
 const infoPresenter = new InfoPresenter(headerMainEl, eventsModel);
 const tripPresenter = new TripPresenter(mainEl, eventsModel, detailsModel, offersModel, filterModel, api);
-const filterPresenter = new FilterPresenter(headerControlsEl, filterModel);
+const filterPresenter = new FilterPresenter(headerControlsEl, filterModel, eventsModel);
 
 let statsComponent = null;
 

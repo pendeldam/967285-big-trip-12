@@ -3,7 +3,7 @@ import AbstractView from './abstract.js';
 const createFilterItemMarkup = (filters, currentFilterType) => {
   return filters
     .map((filter) => {
-      const {type, name} = filter;
+      const {type, name, count} = filter;
 
       return (
         `<div class="trip-filters__filter">
@@ -13,6 +13,7 @@ const createFilterItemMarkup = (filters, currentFilterType) => {
             name="trip-filter"
             value="${type}"
             ${type === currentFilterType ? `checked` : ``}
+            ${!count ? `disabled` : ``}
           >
           <label class="trip-filters__filter-label" for="filter-${type}">
             ${name}
