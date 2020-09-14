@@ -1,6 +1,6 @@
 import he from 'he';
 import AbstractView from './abstract.js';
-import {formatTime, formatDuration} from '../utils/event.js';
+import {formatType, formatTime, formatDuration} from '../utils/event.js';
 
 const createOfferItemMarkup = (offers) => {
   return offers.slice(0, 3).map((offer) => {
@@ -38,7 +38,7 @@ const createTripEventMarkup = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type.replace(type.charAt(0), type.charAt(0).toUpperCase())} ${preposition} ${destination.name}</h3>
+        <h3 class="event__title">${formatType(type)} ${preposition} ${destination.name}</h3>
 
         <div class="event__schedule">
           <p class="event__time">

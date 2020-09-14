@@ -30,7 +30,7 @@ const renderChart = (canvasCtx, events, title, label) => {
           color: `#000000`,
           anchor: `end`,
           align: `start`,
-          formatter: (val) => title === `MONEY` ? `${label} ${val}` : `${val}${label}`
+          formatter: (val) => `${val}${label}`
         }
       },
       title: {

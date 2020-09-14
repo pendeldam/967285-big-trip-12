@@ -79,9 +79,7 @@ export default class EventNew {
   }
 
   _escKeyDownHandler(evt) {
-    const isEscKey = evt.key === `Esc` || evt.key === `Escape`;
-
-    if (isEscKey) {
+    if (evt.key === `Esc` || evt.key === `Escape`) {
       evt.preventDefault();
       this.destroy();
     }

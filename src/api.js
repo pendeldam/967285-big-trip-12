@@ -49,16 +49,16 @@ export default class Api {
 
   deleteEvent(event) {
     return this._load({
-      url: `points/${event.id}`,
+      url: `points/${event.object.id}`,
       method: Method.DELETE
     });
   }
 
-  updateEvent(event) {
+  updateEvent(update) {
     return this._load({
-      url: `points/${event.id}`,
+      url: `points/${update.object.id}`,
       method: Method.PUT,
-      body: JSON.stringify(EventsModel.adaptToServer(event)),
+      body: JSON.stringify(EventsModel.adaptToServer(update.object)),
       headers: new Headers({"Content-type": `application/json`})
     })
       .then(Api.toJSON)

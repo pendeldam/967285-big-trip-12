@@ -16,7 +16,7 @@ export default class Events extends Observer {
   }
 
   updateEvent(updateType, update) {
-    const index = this._events.findIndex((event) => event.id === update.id);
+    const index = this._events.findIndex((event) => event.id === update.object.id);
 
     if (index === -1) {
       throw new Error(`Can't update unexisting event`);
@@ -24,7 +24,7 @@ export default class Events extends Observer {
 
     this._events = [
       ...this._events.slice(0, index),
-      update,
+      update.object,
       ...this._events.slice(index + 1)
     ];
 
@@ -41,7 +41,7 @@ export default class Events extends Observer {
   }
 
   deleteEvent(updateType, update) {
-    const index = this._events.findIndex((event) => event.id === update.id);
+    const index = this._events.findIndex((event) => event.id === update.object.id);
 
     if (index === -1) {
       throw new Error(`Can't delete unexisting event`);

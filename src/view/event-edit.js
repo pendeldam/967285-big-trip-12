@@ -179,7 +179,8 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
           <input
             class="event__input  event__input--time"
             id="event-start-time-${id}"
-            type="text" name="event-start-time"
+            type="text"
+            name="event-start-time"
             value="${isDateAvailable(dateFrom)}"
             required
             ${isDisabled ? `disabled` : ``}
@@ -253,11 +254,13 @@ export default class EventEdit extends SmartView {
     this._detailsModel = detailsModel;
     this._offersModel = offersModel;
     this._isNewEvent = isNewEvent;
+    this._isFavorite = event.isFavorite;
     this._datepicker = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this.toggleFavorite = this.toggleFavorite.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
@@ -339,11 +342,14 @@ export default class EventEdit extends SmartView {
   }
 
   _dateChangeHandler([date], str, picker) {
+    const isFavorite = this._isFavorite;
+
     if (picker.element.name === `event-start-time`) {
       if (date > this._datepicker[`event-end-time`].latestSelectedDateObj) {
         this.updateData({
           dateFrom: date,
           dateTo: null,
+          isFavorite
         }, true);
 
         this._datepicker[`event-end-time`].set(`_minDate`, date);
@@ -357,37 +363,44 @@ export default class EventEdit extends SmartView {
     } else {
       this.updateData({
         dateTo: date,
+        isFavorite
       }, true);
     }
   }
 
   _typeChangeHandler(evt) {
     evt.preventDefault();
+    const isFavorite = this._isFavorite;
+
     this.updateData({
       type: evt.target.value,
-      offers: []
+      offers: [],
+      isFavorite
     });
   }
 
   _destinationChangeHandler(evt) {
     evt.preventDefault();
 
+    const isFavorite = this._isFavorite;
     const update = this._detailsModel.getDetails().has(evt.target.value)
       ? this._detailsModel.getDetails().get(evt.target.value)
       : null;
 
     this.updateData({
-      destination: update
+      destination: update,
+      isFavorite
     });
   }
 
   _priceChangeHandler(evt) {
     evt.preventDefault();
-
+    const isFavorite = this._isFavorite;
     const update = isNaN(evt.target.value) ? 0 : +evt.target.value;
 
     this.updateData({
-      price: update
+      price: update,
+      isFavorite
     });
   }
 
@@ -398,6 +411,7 @@ export default class EventEdit extends SmartView {
 
     evt.preventDefault();
     let update = this._data.offers.slice();
+    const isFavorite = this._isFavorite;
 
     if (evt.target.checked) {
       update.push({
@@ -406,7 +420,8 @@ export default class EventEdit extends SmartView {
       });
 
       this.updateData({
-        offers: update
+        offers: update,
+        isFavorite
       });
 
     } else {
@@ -414,7 +429,8 @@ export default class EventEdit extends SmartView {
       update = update.filter((offer) => offer.title !== evt.target.dataset.title);
 
       this.updateData({
-        offers: update
+        offers: update,
+        isFavorite
       });
     }
   }
@@ -439,12 +455,21 @@ export default class EventEdit extends SmartView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
+    const isFavorite = this._isFavorite;
+
+    this._data = Object.assign({}, this._data, {isFavorite});
+
     this._callback.submitForm(EventEdit.parseDataToEvent(this._data));
   }
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this._callback.favoriteClick(evt.target.checked);
+    this._isFavorite = evt.target.checked;
+  }
+
+  toggleFavorite(value) {
+    this.getElement().querySelector(`.event__favorite-checkbox`).checked = value;
   }
 
   _formDeleteClickHandler(evt) {
@@ -453,20 +478,11 @@ export default class EventEdit extends SmartView {
   }
 
   static parseEventToData(event) {
-    return Object.assign({}, event, {
-      isDisabled: false,
-      isSaving: false,
-      isDeleting: false
-    });
+    return Object.assign({}, event);
   }
 
   static parseDataToEvent(data) {
-    data = Object.assign({}, data);
-
-    delete data.isDisabled;
-    delete data.isSaving;
-    delete data.isDeleting;
-
-    return data;
+    return Object.assign({}, data);
   }
+
 }
