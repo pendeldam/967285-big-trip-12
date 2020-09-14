@@ -36,11 +36,29 @@ export default class Api {
       .then((offers) => new Map(offers.map((it) => [it.type, it])));
   }
 
-  updateEvent(event) {
+  addEvent(event) {
     return this._load({
-      url: `points/${event.id}`,
-      method: Method.PUT,
+      url: `points`,
+      method: Method.POST,
       body: JSON.stringify(EventsModel.adaptToServer(event)),
+      headers: new Headers({"Content-type": `application/json`})
+    })
+    .then(Api.toJSON)
+    .then(EventsModel.adaptToClient);
+  }
+
+  deleteEvent(event) {
+    return this._load({
+      url: `points/${event.object.id}`,
+      method: Method.DELETE
+    });
+  }
+
+  updateEvent(update) {
+    return this._load({
+      url: `points/${update.object.id}`,
+      method: Method.PUT,
+      body: JSON.stringify(EventsModel.adaptToServer(update.object)),
       headers: new Headers({"Content-type": `application/json`})
     })
       .then(Api.toJSON)

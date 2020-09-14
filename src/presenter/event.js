@@ -6,7 +6,18 @@ import {isEqual} from '../utils/event.js';
 
 const Mode = {
   DEFAULT: `DEFAULT`,
-  EDITING: `EDITING`
+  EDITING: `EDITING`,
+  ABORTING: `ABORTING`
+};
+
+export const UpdateSwitch = {
+  FULL: `FULL`,
+  PARTIONAL: `PARTIONAL`
+};
+
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`
 };
 
 export default class Event {
@@ -33,7 +44,6 @@ export default class Event {
     this._event = event;
 
     const prevEventComponent = this._eventComponent;
-    const prevEventEditComponent = this._eventEditComponent;
 
     this._eventComponent = new EventView(event);
     this._eventComponent.setEditClickHandler(this._handleEditClick);
@@ -48,16 +58,24 @@ export default class Event {
     }
 
     if (this._mode === Mode.EDITING) {
-      this._eventEditComponent = new EventEditView(this._detailsMode, this._offersModel, false, this._event);
-      this._eventEditComponent.setSubmitFormHandler(this._handleFormSubmit);
-      this._eventEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-      this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
-
-      replace(this._eventEditComponent, prevEventEditComponent);
+      replace(this._eventComponent, this._eventEditComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevEventComponent);
-    remove(prevEventEditComponent);
+    remove(this._eventEditComponent);
+  }
+
+  update(event) {
+    this._event = event.object;
+    switch (event.type) {
+      case UpdateSwitch.FULL:
+        this.init(event.object);
+        break;
+      case UpdateSwitch.PARTIONAL:
+        event.change.call(this._eventEditComponent);
+        break;
+    }
   }
 
   resetView() {
@@ -69,6 +87,35 @@ export default class Event {
   destroy() {
     remove(this._eventComponent);
     remove(this._eventEditComponent);
+  }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._eventEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ABORTING:
+        this._eventComponent.shake(resetFormState);
+        this._eventEditComponent.shake(resetFormState);
+        break;
+    }
   }
 
   _replaceEventToEdit() {
@@ -111,18 +158,29 @@ export default class Event {
     this._changeData(
         UserAction.UPDATE_EVENT,
         isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-        update
+        {
+          type: UpdateSwitch.FULL,
+          object: update,
+          change() {
+            throw new Error(`Method restricted.`);
+          }
+        }
     );
 
-    this._replaceEventEditToEvent();
+    // this._replaceEventEditToEvent();
   }
 
-  _handleFavoriteClick() {
+  _handleFavoriteClick(value) {
     this._changeData(
         UserAction.UPDATE_EVENT,
         UpdateType.PATCH,
-        Object.assign(
-            {}, this._event, {isFavorite: !this._event.isFavorite})
+        {
+          type: UpdateSwitch.PARTIONAL,
+          object: Object.assign({}, this._event, {isFavorite: !this._event.isFavorite}),
+          change() {
+            this.toggleFavorite(value);
+          }
+        }
     );
   }
 
@@ -130,7 +188,13 @@ export default class Event {
     this._changeData(
         UserAction.DELETE_EVENT,
         UpdateType.MINOR,
-        event
+        {
+          type: UpdateSwitch.FULL,
+          object: event,
+          change() {
+            throw new Error(`Method restricted.`);
+          }
+        }
     );
   }
 }

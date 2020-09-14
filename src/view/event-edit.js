@@ -59,16 +59,16 @@ const createDescriptionMarkup = (destination, details) => {
   );
 };
 
-const createOffersListMarkup = (offers, type, event) => {
+const createOffersListMarkup = (offers, type, event, isDisabled) => {
   return (
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-      <div class="event__available-offers">${createOfferItemMarkup(offers, type, event)}</div>
+      <div class="event__available-offers">${createOfferItemMarkup(offers, type, event, isDisabled)}</div>
     </section>`
   );
 };
 
-const createOfferItemMarkup = (offers, type, event) => {
+const createOfferItemMarkup = (offers, type, event, isDisabled) => {
   return offers.get(type).offers.map((offer) => {
     const id = offer.title.toLowerCase().split(` `).join(`-`);
     const index = event.offers.length ? event.offers.findIndex((it) => it.title === offer.title) : -1;
@@ -83,6 +83,7 @@ const createOfferItemMarkup = (offers, type, event) => {
           data-title="${offer.title}"
           data-price="${offer.price}"
           ${isChecked}
+          ${isDisabled ? `disabled` : ``}
         >
         <label class="event__offer-label" for="event-offer-${id}-${event.id}">
           <span class="event__offer-title">${offer.title}</span>
@@ -109,7 +110,19 @@ const isOffersAvailable = (type, offers) => {
 };
 
 const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
-  const {id, type, dateFrom, dateTo, price, destination, isFavorite} = event;
+  const {
+    id,
+    type,
+    dateFrom,
+    dateTo,
+    price,
+    destination,
+    isFavorite,
+    isDisabled,
+    isSaving,
+    isDeleting
+  } = event;
+
   const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(type) ? `in` : `to`;
 
   const isDateAvailable = (date) => {
@@ -129,7 +142,12 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
+          <input
+            class="event__type-toggle  visually-hidden"
+            id="event-type-toggle-${id}"
+            type="checkbox"
+            ${isDisabled ? `disabled` : ``}
+          >
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -146,7 +164,7 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-${id}">
-          ${type.replace(type.charAt(0), type.charAt(0).toUpperCase())} ${preposition}
+          ${formatType(type)} ${preposition}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination ? destination.name : ``}" list="destination-list-${id}" required>
           <datalist id="destination-list-${id}">
@@ -158,12 +176,28 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
           <label class="visually-hidden" for="event-start-time-${id}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${isDateAvailable(dateFrom)}" required>
+          <input
+            class="event__input  event__input--time"
+            id="event-start-time-${id}"
+            type="text"
+            name="event-start-time"
+            value="${isDateAvailable(dateFrom)}"
+            required
+            ${isDisabled ? `disabled` : ``}
+          >
           &mdash;
           <label class="visually-hidden" for="event-end-time-${id}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${isDateAvailable(dateTo)}" required>
+          <input
+            class="event__input  event__input--time"
+            id="event-end-time-${id}"
+            type="text"
+            name="event-end-time"
+            value="${isDateAvailable(dateTo)}"
+            required
+            ${isDisabled ? `disabled` : ``}
+          >
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -171,11 +205,22 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${he.encode(price.toString())}">
+          <input
+            class="event__input  event__input--price"
+            id="event-price-${id}"
+            type="text"
+            name="event-price"
+            value="${he.encode(price.toString())}"
+            ${isDisabled ? `disabled` : ``}
+          >
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${isNewEvent ? `Cancel` : `Delete`}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? `disabled` : ``}>
+          ${isSaving ? `Saving` : `Save`}
+        </button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>
+          ${isNewEvent ? `Cancel` : `${isDeleting ? `Deleting` : `Delete`}`}
+        </button>
 
       ${!isNewEvent ?
       `<input id="event-favorite-${id}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
@@ -194,7 +239,7 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
       </header>
 
       <section class="event__details">
-      ${isOffersAvailable(type, offers) ? createOffersListMarkup(offers, type, event) : ``}
+      ${isOffersAvailable(type, offers) ? createOffersListMarkup(offers, type, event, isDisabled) : ``}
       ${isDetailsAvailable(destination, details) ? createDescriptionMarkup(destination, details) : ``}
       </section>
     </form>
@@ -209,11 +254,13 @@ export default class EventEdit extends SmartView {
     this._detailsModel = detailsModel;
     this._offersModel = offersModel;
     this._isNewEvent = isNewEvent;
+    this._isFavorite = event.isFavorite;
     this._datepicker = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this.toggleFavorite = this.toggleFavorite.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._dateChangeHandler = this._dateChangeHandler.bind(this);
@@ -295,11 +342,14 @@ export default class EventEdit extends SmartView {
   }
 
   _dateChangeHandler([date], str, picker) {
+    const isFavorite = this._isFavorite;
+
     if (picker.element.name === `event-start-time`) {
       if (date > this._datepicker[`event-end-time`].latestSelectedDateObj) {
         this.updateData({
           dateFrom: date,
           dateTo: null,
+          isFavorite
         }, true);
 
         this._datepicker[`event-end-time`].set(`_minDate`, date);
@@ -313,37 +363,44 @@ export default class EventEdit extends SmartView {
     } else {
       this.updateData({
         dateTo: date,
+        isFavorite
       }, true);
     }
   }
 
   _typeChangeHandler(evt) {
     evt.preventDefault();
+    const isFavorite = this._isFavorite;
+
     this.updateData({
       type: evt.target.value,
-      offers: []
+      offers: [],
+      isFavorite
     });
   }
 
   _destinationChangeHandler(evt) {
     evt.preventDefault();
 
+    const isFavorite = this._isFavorite;
     const update = this._detailsModel.getDetails().has(evt.target.value)
       ? this._detailsModel.getDetails().get(evt.target.value)
       : null;
 
     this.updateData({
-      destination: update
+      destination: update,
+      isFavorite
     });
   }
 
   _priceChangeHandler(evt) {
     evt.preventDefault();
-
+    const isFavorite = this._isFavorite;
     const update = isNaN(evt.target.value) ? 0 : +evt.target.value;
 
     this.updateData({
-      price: update
+      price: update,
+      isFavorite
     });
   }
 
@@ -354,6 +411,7 @@ export default class EventEdit extends SmartView {
 
     evt.preventDefault();
     let update = this._data.offers.slice();
+    const isFavorite = this._isFavorite;
 
     if (evt.target.checked) {
       update.push({
@@ -362,7 +420,8 @@ export default class EventEdit extends SmartView {
       });
 
       this.updateData({
-        offers: update
+        offers: update,
+        isFavorite
       });
 
     } else {
@@ -370,7 +429,8 @@ export default class EventEdit extends SmartView {
       update = update.filter((offer) => offer.title !== evt.target.dataset.title);
 
       this.updateData({
-        offers: update
+        offers: update,
+        isFavorite
       });
     }
   }
@@ -395,12 +455,21 @@ export default class EventEdit extends SmartView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
+    const isFavorite = this._isFavorite;
+
+    this._data = Object.assign({}, this._data, {isFavorite});
+
     this._callback.submitForm(EventEdit.parseDataToEvent(this._data));
   }
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this._callback.favoriteClick(evt.target.checked);
+    this._isFavorite = evt.target.checked;
+  }
+
+  toggleFavorite(value) {
+    this.getElement().querySelector(`.event__favorite-checkbox`).checked = value;
   }
 
   _formDeleteClickHandler(evt) {

@@ -1,11 +1,13 @@
 import FilterView from '../view/filter.js';
 import {render, replace, remove} from '../utils/render.js';
 import {FilterType, UpdateType} from '../const.js';
+import {filter} from '../utils/filter.js';
 
 export default class Filter {
-  constructor(container, filterModel) {
+  constructor(container, filterModel, eventsModel) {
     this._container = container;
     this._filterModel = filterModel;
+    this._eventsModel = eventsModel;
     this._currentFilter = null;
     this._filterComponent = null;
 
@@ -13,6 +15,7 @@ export default class Filter {
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
     this._filterModel.addObserver(this._handleModelEvent);
+    this._eventsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -33,18 +36,23 @@ export default class Filter {
   }
 
   _getFilters() {
+    const events = this._eventsModel.getEvents();
+
     return [
       {
         type: FilterType.EVERYTHING,
-        name: `Everything`
+        name: `Everything`,
+        count: filter[FilterType.EVERYTHING](events).length
       },
       {
         type: FilterType.FUTURE,
-        name: `Future`
+        name: `Future`,
+        count: filter[FilterType.FUTURE](events).length
       },
       {
         type: FilterType.PAST,
-        name: `Past`
+        name: `Past`,
+        count: filter[FilterType.PAST](events).length
       }
     ];
   }

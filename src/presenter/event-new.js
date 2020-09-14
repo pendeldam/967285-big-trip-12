@@ -1,5 +1,4 @@
 import EventEditView from '../view/event-edit.js';
-import {generateId} from '../mock/event.js';
 import {render, remove} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
@@ -48,14 +47,31 @@ export default class EventNew {
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
 
+  setSaving() {
+    this._eventEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._eventEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this._eventEditComponent.shake(resetFormState);
+  }
+
   _handleFormSubmit(event) {
     this._changeData(
         UserAction.ADD_EVENT,
         UpdateType.MINOR,
-        Object.assign({id: generateId()}, event)
+        event
     );
-
-    this.destroy();
   }
 
   _handleDeleteClick() {
@@ -63,9 +79,7 @@ export default class EventNew {
   }
 
   _escKeyDownHandler(evt) {
-    const isEscKey = evt.key === `Esc` || evt.key === `Escape`;
-
-    if (isEscKey) {
+    if (evt.key === `Esc` || evt.key === `Escape`) {
       evt.preventDefault();
       this.destroy();
     }
