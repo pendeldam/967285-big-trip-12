@@ -97,6 +97,7 @@ apiWithProvider.getDetails()
   })
   .catch(() => {
     eventsModel.setEvents(UpdateType.INIT, []);
+    filterPresenter.destroy();
     newEventButton.disabled = true;
   });
 

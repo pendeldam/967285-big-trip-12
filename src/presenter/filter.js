@@ -35,6 +35,10 @@ export default class Filter {
     remove(prevFilterComponent);
   }
 
+  destroy() {
+    remove(this._filterComponent);
+  }
+
   _getFilters() {
     const events = this._eventsModel.getEvents();
 

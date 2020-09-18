@@ -116,7 +116,7 @@ export default class Provider {
         .then(() => this._store.removeItem(event.object.id));
     }
 
-    this._store.removeItem(event.id);
+    this._store.removeItem(event.object.id);
     return Promise.resolve();
   }
 
