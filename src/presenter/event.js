@@ -58,6 +58,7 @@ export default class Event {
     }
 
     if (this._mode === Mode.EDITING) {
+      document.removeEventListener(`keydown`, this._escKeydownHandler);
       replace(this._eventComponent, this._eventEditComponent);
       this._mode = Mode.DEFAULT;
     }

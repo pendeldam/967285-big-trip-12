@@ -1,4 +1,4 @@
-import EventsModel from './model/events.js';
+import EventsModel from '../model/events.js';
 
 const Method = {
   GET: `GET`,
@@ -20,20 +20,18 @@ export default class Api {
 
   getEvents() {
     return this._load({url: `points`})
-    .then(Api.toJSON)
-    .then((events) => events.map(EventsModel.adaptToClient));
+      .then(Api.toJSON)
+      .then((events) => events.map(EventsModel.adaptToClient));
   }
 
   getDetails() {
     return this._load({url: `destinations`})
-      .then(Api.toJSON)
-      .then((details) => new Map(details.map((it) => [it.name, it])));
+      .then(Api.toJSON);
   }
 
   getOffers() {
     return this._load({url: `offers`})
-      .then(Api.toJSON)
-      .then((offers) => new Map(offers.map((it) => [it.type, it])));
+      .then(Api.toJSON);
   }
 
   addEvent(event) {
@@ -63,6 +61,16 @@ export default class Api {
     })
       .then(Api.toJSON)
       .then(EventsModel.adaptToClient);
+  }
+
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-type": `application/json`})
+    })
+    .then(Api.toJSON);
   }
 
   _load({
