@@ -123,7 +123,7 @@ const createTripEventEditMarkup = (details, offers, event, isNewEvent) => {
     isDeleting
   } = event;
 
-  const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(type) ? `in` : `to`;
+  const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(formatType(type)) ? `in` : `to`;
 
   const isDateAvailable = (date) => {
     if (!date) {
@@ -464,12 +464,13 @@ export default class EventEdit extends SmartView {
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick(evt.target.checked);
-    this._isFavorite = evt.target.checked;
+    this._isFavorite = !this._isFavorite;
+    this.updateElement();
+    this._callback.favoriteClick();
   }
 
-  toggleFavorite(value) {
-    this.getElement().querySelector(`.event__favorite-checkbox`).checked = value;
+  toggleFavorite() {
+    this.getElement().querySelector(`.event__favorite-checkbox`).checked = this._isFavorite;
   }
 
   _formDeleteClickHandler(evt) {
