@@ -40,7 +40,7 @@ const createDescriptionMarkup = (destination, details) => {
   const createPhotosMarkup = () => {
     return details.get(destination.name).pictures.length
       ? details.get(destination.name).pictures
-          .map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}" onerror="this.src='img/logo.png'">`)
+          .map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}" onerror="this.onerror=null;this.src='img/logo.png'">`)
           .join(`\n`)
       : ``;
   };
