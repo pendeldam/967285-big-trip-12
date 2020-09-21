@@ -22,7 +22,7 @@ const createOffersListMarkup = (offers) => {
 
 const createTripEventMarkup = (event) => {
   const {type, price, destination, dateFrom, dateTo, offers} = event;
-  const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(type) ? `in` : `to`;
+  const preposition = [`Check-in`, `Sightseeing`, `Restaurant`].includes(formatType(type)) ? `in` : `to`;
 
   const isDateAvailable = (date) => {
     if (!date) {

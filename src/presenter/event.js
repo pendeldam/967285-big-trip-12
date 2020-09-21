@@ -167,11 +167,9 @@ export default class Event {
           }
         }
     );
-
-    // this._replaceEventEditToEvent();
   }
 
-  _handleFavoriteClick(value) {
+  _handleFavoriteClick() {
     this._changeData(
         UserAction.UPDATE_EVENT,
         UpdateType.PATCH,
@@ -179,7 +177,7 @@ export default class Event {
           type: UpdateSwitch.PARTIONAL,
           object: Object.assign({}, this._event, {isFavorite: !this._event.isFavorite}),
           change() {
-            this.toggleFavorite(value);
+            this.toggleFavorite();
           }
         }
     );

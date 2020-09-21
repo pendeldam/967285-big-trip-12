@@ -13,16 +13,16 @@ import StatsView from './view/stats.js';
 import {render, remove} from './utils/render.js';
 import {MenuItem, UpdateType, FilterType} from './const.js';
 
-const headerMainEl = document.querySelector(`.trip-main`);
-const headerControlsEl = headerMainEl.querySelector(`.trip-controls`);
-const newEventButton = headerMainEl.querySelector(`.trip-main__event-add-btn`);
-const mainEl = document.querySelector(`.trip-events`);
-
 const AUTHORIZATION = `Basic 809hfd21mnv376lk123xz`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `big-trip-localstorage`;
 const STORE_VER = `v12`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+
+const headerMainEl = document.querySelector(`.trip-main`);
+const headerControlsEl = headerMainEl.querySelector(`.trip-controls`);
+const newEventButton = headerMainEl.querySelector(`.trip-main__event-add-btn`);
+const mainEl = document.querySelector(`.trip-events`);
 
 const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
@@ -53,6 +53,11 @@ const handleSiteMenuClick = (menuItem) => {
 
     case MenuItem.STATS:
       filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+      if (!eventsModel.getEvents().length) {
+        return;
+      }
+
       tripPresenter.destroy();
       statsComponent = new StatsView(eventsModel.getEvents());
       render(mainEl, statsComponent);
