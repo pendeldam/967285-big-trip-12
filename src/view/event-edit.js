@@ -311,10 +311,10 @@ export default class EventEdit extends SmartView {
           altFormat: `d/m/y H:i`,
           allowInput: true,
           enableTime: true,
-          // eslint-disable-next-line camelcase
-          time_24hr: true,
+          time_24hr: true, // eslint-disable-line camelcase
           defaultDate: date,
           minDate: limit,
+          minTime: limit,
           onChange: this._dateChangeHandler
         })
       });
@@ -353,11 +353,15 @@ export default class EventEdit extends SmartView {
         }, true);
 
         this._datepicker[`event-end-time`].set(`_minDate`, date);
+        this._datepicker[`event-end-time`].set(`_minTime`, date);
+
       } else {
         this.updateData({
           dateFrom: date,
         }, true);
+
         this._datepicker[`event-end-time`].set(`_minDate`, date);
+        this._datepicker[`event-end-time`].set(`_minTime`, date);
       }
 
     } else {

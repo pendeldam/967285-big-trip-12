@@ -26,10 +26,10 @@ const datesMarkup = (events) => {
 };
 
 const costMarkup = (events) => {
-  let sum = {price: 0};
+  const sum = {price: 0};
 
   for (const event of events) {
-    let cost = event.offers.reduce((acc, val) =>
+    const cost = event.offers.reduce((acc, val) =>
       ({price: acc.price + val.price}), {price: event.price});
 
     sum.price += cost.price;

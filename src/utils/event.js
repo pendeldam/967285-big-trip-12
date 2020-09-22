@@ -25,11 +25,25 @@ export const formatTime = (date) => {
 export const formatDuration = (dateFrom, dateTo) => {
   const diff = moment(dateFrom).diff(dateTo);
   const duration = moment.duration(diff);
-  const days = duration.days() ? `${String(duration.days()).replace(`-`, ``).padStart(2, `0`)}D` : ``;
-  const hours = duration.hours() ? `${String(duration.hours()).replace(`-`, ``).padStart(2, `0`)}H` : ``;
-  const minutes = duration.minutes() ? `${String(duration.minutes()).replace(`-`, ``).padStart(2, `0`)}M` : ``;
 
-  return `${days} ${hours} ${minutes}`;
+  const days = duration.days() ? `${String(duration.days()).replace(`-`, ``).padStart(2, `0`)}D` : ``;
+  const mins = duration.minutes() ? `${String(duration.minutes()).replace(`-`, ``).padStart(2, `0`)}M` : `00M`;
+
+  if ((Math.floor(duration.asHours()) <= -24)) {
+    const hours = duration.hours() ? `${String(duration.hours()).replace(`-`, ``).padStart(2, `0`)}H` : `00H`;
+    const minutes = duration.minutes() ? `${String(duration.minutes()).replace(`-`, ``).padStart(2, `0`)}M` : `00M`;
+
+    return `${days} ${hours} ${minutes}`;
+  }
+
+  if ((Math.floor(duration.asMinutes()) <= -60)) {
+    const hours = duration.hours() ? `${String(duration.hours()).replace(`-`, ``).padStart(2, `0`)}H` : ``;
+    const minutes = duration.minutes() ? `${String(duration.minutes()).replace(`-`, ``).padStart(2, `0`)}M` : `00M`;
+
+    return `${days} ${hours} ${minutes}`;
+  }
+
+  return `${mins}`;
 };
 
 export const sortByDefault = (eventA, eventB) => {
