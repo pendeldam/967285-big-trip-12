@@ -311,7 +311,7 @@ export default class EventEdit extends SmartView {
           altFormat: `d/m/y H:i`,
           allowInput: true,
           enableTime: true,
-          time_24hr: true, // eslint-disable-line camelcase
+          [`time_24hr`]: true,
           defaultDate: date,
           minDate: limit,
           minTime: limit,
